@@ -31,10 +31,9 @@ It will also deactivate the virtual environment before exit, only if it activate
 
 ### Commands and messages
 
-**WIP**:
+- The WebSocket server will periodically send its time to all connected clients using a JSON string like `{"time": "2023-09-05T20:43:57.208074Z"}`
 
-- The WebSocket server will periodically send its time to all connected clients using a JSON string like "time": message
-- The WebSocket server responds to "cmd":"getSettings" with 'settings':
+- The WebSocket server responds to `{"cmd":"getSettings"}` with `{"settings": {"WiFi0": [{"legend": "WiFi configuration"}, {"id": "SSID0", ... `
 
 ## WebSocket clients
 
