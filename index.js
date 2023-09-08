@@ -1,14 +1,24 @@
 import { SettingsFormBuilder } from "./settings.js"
+import { Logger } from "./logger.js";
 
 // var gwURL = `ws://${window.location.hostname}/ws`;
 var gwURL = "ws://localhost:8001/";
 var websocket;
 
 const sfb = new SettingsFormBuilder(onSettingFormSubmit);
+const log = new Logger('log', 2500, 2500);
+
+function setLogColors() {
+  let styles = getComputedStyle(document.querySelector(':root'));
+  let ct = styles.getPropertyValue('--c-txt');
+  let ce = styles.getPropertyValue('--c-err');
+  log.setColors(ct, ct, ce);
+}
 
 window.addEventListener('load', onLoad);
 
 function onLoad(event) {
+  setLogColors();
   wsConnect();
   initButtons();
 }
@@ -21,17 +31,18 @@ function wsConnect() {
 }
 
 function wsOnOpen(event) {
-  console.log('ws connection opened');
+  log.log('ws connection opened');
 
   var path = window.location.pathname;
   var page = path.split("/").pop();
   if (page == 'settings.html') {
+    log.log('requesting settings');
     websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
   }
 }
 
 function wsOnClose(event) {
-  console.log('ws connection closed');
+  log.err('ws connection closed');
   setTimeout(wsConnect, 2000);
 }
 
@@ -41,7 +52,7 @@ function wsOnMessage(event) {
     jsonData = JSON.parse(event.data);
   }
   catch (error) {
-    console.log(`Failed to parse message as JSON: ${event.data}`);
+    log.err(`Failed to parse message as JSON: ${event.data}`);
   }
 
   if (jsonData !== null) {
@@ -49,13 +60,17 @@ function wsOnMessage(event) {
       let val = jsonData[key];
       switch (key) {
         case "time":
-          document.getElementById('currentTime').innerHTML = val;
+          let elem = document.getElementById('currentTime');
+          if (elem != null) {
+            elem.innerHTML = val;
+          }
           break;
         case "settings":
+          log.log('settings received');
           sfb.Build(val);
           break;
         default:
-          console.log(`key: ${key}, value: ${val}`);
+          log.warn(`received ${key} key`);
           break;
       }
     })
@@ -71,10 +86,11 @@ function onSettingFormSubmit() {
     obj['data'] = dataObj;
 
     if (websocket.readyState == websocket.OPEN) {
+      log.log('new settings sent');
       websocket.send(JSON.stringify(obj));
     }
     else {
-      logger('websocket is NOT connected !');
+      log.err('websocket is NOT connected !');
     }
   }
 }
