@@ -47,31 +47,27 @@ async def handle_clients(websocket):
         logging.info(f'Client removed, count is {len(clients)}')
 
 def buildSettingsDict():
-    fmtString = "((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"
-    print(fmtString)
-    fmtString.replace("\\", "\\\\")
-    print(fmtString)
+    formatStringIP = "((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"
 
     settingsD['WiFi0'] = [
         {'legend':'WiFi configuration'},
-        {'id':'SSID0', 'label':'SSID', 'val':'firstSSID'},
-        {'id':'Pass0', 'label':'Password', 'val':'firstPass'},
+        {'id':'SSID0', 'label':'SSID',      'val':'firstSSID'},
+        {'id':'Pass0', 'label':'Password',  'val':'firstPass'},
         {'val':'Leave the next fields empty if the address is assigned through DHCP'},
-        {'id':'IP0', 'label':'Static IP', 'val':'', 'fmt':'', 'hint':'xxx.xxx.xxx.xxx'},
-        # {'id':'IP0', 'label':'Static IP', 'val':'', 'fmt':'((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$', 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'Mask0', 'label':'Mask', 'val':'', 'fmt':fmtString},
-        {'id':'GW0', 'label':'Gateway', 'val':''},
-        {'id':'DNS0', 'label':'DNS', 'val':''}
+        {'id':'IP0',   'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'id':'Mask0', 'label':'Mask',      'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'id':'GW0',   'label':'Gateway',   'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'id':'DNS0',  'label':'DNS',       'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
     ]
     settingsD['WiFi1'] = [
         {'legend':'Alternate WiFi configuration'},
         {'id':'SSID1', 'label':'SSID', 'val':'firstSSID'},
         {'id':'Pass1', 'label':'Password', 'val':'firstPass'},
         {'val':'Leave the next fields empty if the address is assigned through DHCP'},
-        {'id':'IP1', 'label':'Static IP', 'val':'', 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'Mask1', 'label':'Mask', 'val':'', 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'GW1', 'label':'Gateway', 'val':'', 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'DNS1', 'label':'DNS', 'val':'', 'hint':'xxx.xxx.xxx.xxx'}
+        {'id':'IP1', 'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'id':'Mask1', 'label':'Mask', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'id':'GW1', 'label':'Gateway', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'id':'DNS1', 'label':'DNS', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
     ]
     settingsD['Name'] = [
         {'legend':'Name'},
@@ -81,8 +77,8 @@ def buildSettingsDict():
     settingsD['NTP'] = [
         {'legend':'Time'},
         {'id':'srvNTP', 'label':'NTP Server', 'val':'pool.ntp.org'},
-        {'id':'gmtOffset', 'label':'GMT offset [seconds]', 'val':7200},
-        {'id':'daylightOffset', 'label':'Daylight offset', 'val':3600}
+        {'id':'gmtOffset', 'label':'GMT offset [s]', 'val':7200},
+        {'id':'daylightOffset', 'label':'Daylight offset [s]', 'val':3600}
     ]
     settingsD['Telegram'] = [
         {'legend':'Telegram'},
