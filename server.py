@@ -50,41 +50,50 @@ def buildSettingsDict():
     formatStringIP = "((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"
 
     settingsD['WiFi0'] = [
-        {'legend':'WiFi configuration'},
-        {'id':'SSID0', 'label':'SSID',      'val':'firstSSID'},
-        {'id':'Pass0', 'label':'Password',  'val':'firstPass'},
-        {'val':'Leave the next fields empty if the address is assigned through DHCP'},
-        {'id':'IP0',   'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'Mask0', 'label':'Mask',      'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'GW0',   'label':'Gateway',   'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'DNS0',  'label':'DNS',       'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
+        {'type':'legend', 'val':'WiFi configuration'},
+        {'type':'text', 'id':'SSID0', 'label':'SSID',      'val':'firstSSID'},
+        {'type':'text', 'id':'Pass0', 'label':'Password',  'val':'firstPass'},
+        {'type':'hint', 'val':'Leave the next fields empty if the address is assigned through DHCP'},
+        {'type':'text', 'id':'IP0',   'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'Mask0', 'label':'Mask',      'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'GW0',   'label':'Gateway',   'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'DNS0',  'label':'DNS',       'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
     ]
     settingsD['WiFi1'] = [
-        {'legend':'Alternate WiFi configuration'},
-        {'id':'SSID1', 'label':'SSID', 'val':'firstSSID'},
-        {'id':'Pass1', 'label':'Password', 'val':'firstPass'},
-        {'val':'Leave the next fields empty if the address is assigned through DHCP'},
-        {'id':'IP1', 'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'Mask1', 'label':'Mask', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'GW1', 'label':'Gateway', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'id':'DNS1', 'label':'DNS', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
+        {'type':'legend', 'val':'Alternate WiFi configuration'},
+        {'type':'text', 'id':'SSID1', 'label':'SSID', 'val':'firstSSID'},
+        {'type':'text', 'id':'Pass1', 'label':'Password', 'val':'firstPass'},
+        {'type':'hint', 'val':'Leave the next fields empty if the address is assigned through DHCP'},
+        {'type':'text', 'id':'IP1', 'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'Mask1', 'label':'Mask', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'GW1', 'label':'Gateway', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'DNS1', 'label':'DNS', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
+    ]
+    settingsD['TestFields'] = [
+        {'type':'legend', 'val':'Test fields'},
+        {'type':'checkbox', 'id':'chk0', 'label':'A checkbox', 'val':'chk0'},
+        {'type':'checkbox', 'id':'chk1', 'label':'Another checkbox', 'val':'chk1'},
+        {'type':'label', 'val':'Choose an option:'},
+        {'type':'radio', 'id':'ro0', 'name':'radiob', 'label':'First option', 'val':'ro0'},
+        {'type':'radio', 'id':'ro1', 'name':'radiob', 'label':'Second option', 'val':'ro1'},
+        {'type':'radio', 'id':'ro2', 'name':'radiob', 'label':'Third option', 'val':'ro2'}
     ]
     settingsD['Name'] = [
-        {'legend':'Name'},
-        {'id':'deviceName', 'label':'Device name', 'val':'ESP32 Device'},
-        {'id':'mDNS', 'label':'mDNS name', 'val':'mDNSnamezzz'}
+        {'type':'legend', 'val':'Name'},
+        {'type':'text', 'id':'deviceName', 'label':'Device name', 'val':'ESP32 Device'},
+        {'type':'text', 'id':'mDNS', 'label':'mDNS name', 'val':'mDNSname'}
     ]
     settingsD['NTP'] = [
-        {'legend':'Time'},
-        {'id':'srvNTP', 'label':'NTP Server', 'val':'pool.ntp.org'},
-        {'id':'gmtOffset', 'label':'GMT offset [s]', 'val':7200},
-        {'id':'daylightOffset', 'label':'Daylight offset [s]', 'val':3600}
+        {'type':'legend', 'val':'Time'},
+        {'type':'text', 'id':'srvNTP', 'label':'NTP Server', 'val':'pool.ntp.org'},
+        {'type':'number', 'id':'gmtOffset', 'label':'GMT offset [s]', 'val':7200},
+        {'type':'number', 'id':'daylightOffset', 'label':'Daylight offset [s]', 'val':3600}
     ]
     settingsD['Telegram'] = [
-        {'legend':'Telegram'},
-        {'id':'chatID', 'label':'Chat ID', 'val':'123'},
-        {'id':'botName', 'label':'Bot name', 'val':'bbbbbbb'},
-        {'id':'botToken', 'label':'Bot token', 'val':'ttttttttttttttt'}
+        {'type':'legend', 'val':'Telegram'},
+        {'type':'text', 'id':'chatID', 'label':'Chat ID', 'val':'123'},
+        {'type':'text', 'id':'botName', 'label':'Bot name', 'val':'bbbbbbb'},
+        {'type':'text', 'id':'botToken', 'label':'Bot token', 'val':'ttttttttttttttt'}
     ]
 
 async def handle_ws_clients():

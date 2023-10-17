@@ -5,78 +5,168 @@ class SettingsFormBuilder {
     this.settingFormSubmit = settingFormSubmit;
   }
 
-  #AddInputField(ds, inputData) {
+  #AddLegend(parentNode, val) {
+    let nodeElem = document.createElement("legend");
+    let nodeText = document.createTextNode(val);
+    nodeElem.appendChild(nodeText);
+    parentNode.appendChild(nodeElem);
+  }
+
+  #AddHint(parentNode, val) {
+    let nodeElem = document.createElement("p");
+    let nodeText = document.createTextNode(val);
+    nodeElem.appendChild(nodeText);
+    parentNode.appendChild(nodeElem);
+  }
+
+  #AddLabel(parentNode, val) {
+    let nodeElem = document.createElement("label");
+    nodeElem.setAttribute("for", "");
+    let nodeText = document.createTextNode(val);
+    nodeElem.appendChild(nodeText);
+    parentNode.appendChild(nodeElem);
+  }
+
+  #AddTextInputLabel(parentNode, id, val) {
+    let nodeElem = document.createElement("label");
+    nodeElem.setAttribute("for", id);
+    let nodeText = document.createTextNode(val);
+    nodeElem.appendChild(nodeText);
+    parentNode.appendChild(nodeElem);
+  }
+
+  #AddTextInputField(parentNode, fieldType, val, id, name, fmt, hint) {
+    let nodeElem = document.createElement("input");
+    nodeElem.setAttribute("type", fieldType);
+    nodeElem.setAttribute("id", id);
+    nodeElem.setAttribute("name", name);
+    nodeElem.setAttribute("value", val);
+    if (fmt != null) {
+      nodeElem.setAttribute("pattern", fmt);
+    }
+    if (hint != null) {
+      nodeElem.setAttribute("placeholder", hint);
+    }
+    parentNode.appendChild(nodeElem);
+  }
+
+  #AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID) {
+    let nodeDiv = document.createElement("div");
+
+    let nodeName = inputData['name'];
+    if (nodeName == null) {
+      nodeName = fieldID;
+    }
+
+    let nodeLabel = inputData['label'];
+    if (nodeLabel == null) {
+      console.warn("No label specified for %s", inputData['id']);
+    }
+
+    let fieldFmt = inputData['fmt'];
+    let fieldHint = inputData['hint'];
+
+    if (fieldType == 'checkbox' || fieldType == 'radio') {
+      this.#AddTextInputField(nodeDiv, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
+      if (nodeLabel != null) {
+        this.#AddTextInputLabel(nodeDiv, fieldID, nodeLabel);
+      }
+    }
+    else {
+      if (nodeLabel != null) {
+        this.#AddTextInputLabel(nodeDiv, fieldID, nodeLabel);
+      }
+      this.#AddTextInputField(nodeDiv, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
+    }
+
+    if (inputData.hasOwnProperty('msg')) {
+      let nodeElem = document.createElement("p");
+      let nodeText = document.createTextNode(inputData['msg']);
+      nodeElem.appendChild(nodeText);
+      nodeDiv.appendChild(nodeElem);
+    }
+
+    parentNode.appendChild(nodeDiv);
+  }
+
+  #AddTextInputRC(parentNode, inputData, fieldType, fieldVal, fieldID) {
+    let nodeName = inputData['name'];
+    if (nodeName == null) {
+      nodeName = fieldID;
+    }
+
+    let nodeLabel = inputData['label'];
+    let fieldFmt = inputData['fmt'];
+    let fieldHint = inputData['hint'];
+
+    this.#AddTextInputField(parentNode, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
+    if (nodeLabel != null) {
+      this.#AddTextInputLabel(parentNode, fieldID, nodeLabel);
+    }
+    else {
+      console.warn("No label specified for %s", fieldID);
+    }
+
+    parentNode.appendChild(document.createElement("br"));
+  }
+
+  #AddInputField(parentNode, inputData) {
     if (inputData.constructor != Object) {
       console.error("The input data should be an object");
       return;
     }
 
-    let nodeElem;
-    let nodeText;
-
-    if (inputData.hasOwnProperty('legend')) {
-      nodeElem = document.createElement("legend");
-      nodeText = document.createTextNode(inputData['legend']);
-      nodeElem.appendChild(nodeText);
-      ds.appendChild(nodeElem);
+    if (!(inputData.hasOwnProperty('type'))) {
+      console.error("The field must have a 'type' property !");
       return;
     }
-
     if (!(inputData.hasOwnProperty('val'))) {
       console.error("The field must have a 'val' property !");
       return;
     }
 
+    const fieldType = inputData['type'];
     const fieldVal = inputData['val'];
 
-    const nodeDiv = document.createElement("div");
-
-    if (inputData.hasOwnProperty('id')) {
-      // this is an input field
-      const fieldID = inputData['id'];
-
-      if (inputData.hasOwnProperty('label')) {
-        nodeElem = document.createElement("label");
-        nodeElem.setAttribute("for", fieldID);
-        nodeText = document.createTextNode(inputData['label']);
-        nodeElem.appendChild(nodeText);
-        nodeDiv.appendChild(nodeElem);
-      }
-      else {
-        console.warn("No label specified for %s", inputData['id']);
-      }
-
-      nodeElem = document.createElement("input");
-      nodeElem.setAttribute("type", "text");
-      nodeElem.setAttribute("name", fieldID);
-      nodeElem.setAttribute("value", fieldVal);
-      if (inputData.hasOwnProperty('fmt')) {
-        nodeElem.setAttribute("pattern", inputData['fmt']);
-      }
-      if (inputData.hasOwnProperty('hint')) {
-        nodeElem.setAttribute("placeholder", inputData['hint']);
-      }
-      nodeDiv.appendChild(nodeElem);
-
-      if (inputData.hasOwnProperty('msg')) {
-        nodeElem = document.createElement("p");
-        nodeText = document.createTextNode(inputData['msg']);
-        nodeElem.appendChild(nodeText);
-        nodeDiv.appendChild(nodeElem);
-      }
-    }
-    else {
-      // this is text only
-      nodeElem = document.createElement("p");
-      nodeText = document.createTextNode(fieldVal);
-      nodeElem.appendChild(nodeText);
-      nodeDiv.appendChild(nodeElem);
+    if (fieldType == 'legend') {
+      this.#AddLegend(parentNode, fieldVal);
+      return;
     }
 
-    ds.appendChild(nodeDiv);
+    if (fieldType == 'hint') {
+      this.#AddHint(parentNode, fieldVal);
+      return;
+    }
+
+    if (fieldType == 'label') {
+      this.#AddLabel(parentNode, fieldVal);
+      return;
+    }
+
+    if (!(inputData.hasOwnProperty('id'))) {
+      console.error("The field must have a 'id' property !");
+      return;
+    }
+    const fieldID = inputData['id'];
+
+    // if (fieldType == 'text' || fieldType == 'number' ||
+    //     fieldType == 'checkbox' || fieldType == 'radio') {
+    //   this.#AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID);
+    //   return;
+    // }
+    if (fieldType == 'text' || fieldType == 'number') {
+      this.#AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID);
+      return;
+    }
+    if (fieldType == 'checkbox' || fieldType == 'radio') {
+      this.#AddTextInputRC(parentNode, inputData, fieldType, fieldVal, fieldID);
+      return;
+    }
+
+    console.error("Unknown field type %s !", fieldType);
   }
 
-  #AddFieldset(ds, key, inputData) {
+  #AddFieldset(parentNode, key, inputData) {
     const nodeElem = document.createElement("fieldset");
 
     if (!(Array.isArray(inputData))) {
@@ -88,10 +178,10 @@ class SettingsFormBuilder {
       this.#AddInputField(nodeElem, elem);
     });
 
-    ds.appendChild(nodeElem);
+    parentNode.appendChild(nodeElem);
   }
 
-  #AddFormButtons(ds) {
+  #AddFormButtons(parentNode) {
     const nodeFs = document.createElement("fieldset");
 
     let nodeElem;
@@ -110,7 +200,7 @@ class SettingsFormBuilder {
     nodeElem.appendChild(nodeText);
     nodeFs.appendChild(nodeElem);
 
-    ds.appendChild(nodeFs);
+    parentNode.appendChild(nodeFs);
   }
 
   Build(jsonSettingsData) {
