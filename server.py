@@ -51,26 +51,19 @@ def buildSettingsDict():
 
     settingsD['WiFi0'] = [
         {'type':'legend', 'val':'WiFi configuration'},
-        {'type':'text', 'id':'SSID0', 'label':'SSID',      'val':'firstSSID'},
-        {'type':'text', 'id':'Pass0', 'label':'Password',  'val':'firstPass'},
-        {'type':'hint', 'val':'Leave the next fields empty if the address is assigned through DHCP'},
-        {'type':'text', 'id':'IP0',   'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'type':'text', 'id':'Mask0', 'label':'Mask',      'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'type':'text', 'id':'GW0',   'label':'Gateway',   'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'type':'text', 'id':'DNS0',  'label':'DNS',       'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
-    ]
-    settingsD['WiFi1'] = [
-        {'type':'legend', 'val':'Alternate WiFi configuration'},
-        {'type':'text', 'id':'SSID1', 'label':'SSID', 'val':'firstSSID'},
-        {'type':'text', 'id':'Pass1', 'label':'Password', 'val':'firstPass'},
-        {'type':'hint', 'val':'Leave the next fields empty if the address is assigned through DHCP'},
-        {'type':'text', 'id':'IP1', 'label':'Static IP', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'type':'text', 'id':'Mask1', 'label':'Mask', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'type':'text', 'id':'GW1', 'label':'Gateway', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
-        {'type':'text', 'id':'DNS1', 'label':'DNS', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'}
+        {'type':'text', 'id':'SSID0', 'label':'SSID', 'val':'Home_SSID'},
+        {'type':'password', 'id':'Pass0', 'label':'Password', 'val':'Password1!'},
+        {'type':'text', 'id':'IP0',   'label':'IPv4',    'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'Mask0', 'label':'Mask',    'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'GW0',   'label':'Gateway', 'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'text', 'id':'DNS0',  'label':'DNS',     'val':'', 'fmt':formatStringIP, 'hint':'xxx.xxx.xxx.xxx'},
+        {'type':'hint', 'val':'Leave IPv4, Mask, Gateway and DNS empty when those are assigned through DHCP'}
     ]
     settingsD['TestFields'] = [
         {'type':'legend', 'val':'Test fields'},
+        {'type':'email', 'id':'email0', 'label':'e-mail', 'val':''},
+        {'type':'date', 'id':'dateS', 'label':'date', 'val':''},
+        {'type':'time', 'id':'timeS', 'label':'time', 'val':''},
         {'type':'checkbox', 'id':'chk0', 'label':'A checkbox', 'val':'chk0'},
         {'type':'checkbox', 'id':'chk1', 'label':'Another checkbox', 'val':'chk1'},
         {'type':'label', 'val':'Choose an option:'},

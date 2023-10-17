@@ -59,25 +59,16 @@ class SettingsFormBuilder {
     }
 
     let nodeLabel = inputData['label'];
-    if (nodeLabel == null) {
-      console.warn("No label specified for %s", inputData['id']);
-    }
-
     let fieldFmt = inputData['fmt'];
     let fieldHint = inputData['hint'];
 
-    if (fieldType == 'checkbox' || fieldType == 'radio') {
-      this.#AddTextInputField(nodeDiv, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
-      if (nodeLabel != null) {
-        this.#AddTextInputLabel(nodeDiv, fieldID, nodeLabel);
-      }
+    if (nodeLabel != null) {
+      this.#AddTextInputLabel(nodeDiv, fieldID, nodeLabel);
     }
     else {
-      if (nodeLabel != null) {
-        this.#AddTextInputLabel(nodeDiv, fieldID, nodeLabel);
-      }
-      this.#AddTextInputField(nodeDiv, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
+      console.warn("No label specified for %s", inputData['id']);
     }
+    this.#AddTextInputField(nodeDiv, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
 
     if (inputData.hasOwnProperty('msg')) {
       let nodeElem = document.createElement("p");
@@ -149,15 +140,14 @@ class SettingsFormBuilder {
     }
     const fieldID = inputData['id'];
 
-    // if (fieldType == 'text' || fieldType == 'number' ||
-    //     fieldType == 'checkbox' || fieldType == 'radio') {
-    //   this.#AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID);
-    //   return;
-    // }
-    if (fieldType == 'text' || fieldType == 'number') {
+    if (fieldType == 'text' || fieldType == 'password' ||
+        fieldType == 'number' || fieldType == 'email' ||
+        fieldType == 'date' || fieldType == 'time')
+    {
       this.#AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID);
       return;
     }
+
     if (fieldType == 'checkbox' || fieldType == 'radio') {
       this.#AddTextInputRC(parentNode, inputData, fieldType, fieldVal, fieldID);
       return;
