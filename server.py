@@ -47,7 +47,10 @@ async def handle_clients(websocket):
         logging.info(f'Client removed, count is {len(clients)}')
 
 def buildSettingsDict():
-    formatStringIP = "((^|\.)((25[0-5])|(2[0-4]\d)|(1\d\d)|([1-9]?\d))){4}$"
+    # [Validating IPv4 addresses with regexp](https://stackoverflow.com/a/36760050)
+    # ^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$
+    # \ are escaped
+    formatStringIP = "^((25[0-5]|(2[0-4]|1\\d|[1-9]|)\\d)\\.?\\b){4}$"
 
     settingsD['WiFi0'] = [
         {'type':'legend', 'val':'WiFi configuration'},
