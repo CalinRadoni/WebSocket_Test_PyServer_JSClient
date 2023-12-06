@@ -35,9 +35,18 @@ function wsOnOpen(event) {
 
   var path = window.location.pathname;
   var page = path.split("/").pop();
-  if (page == 'settings.html') {
-    log.log('requesting settings');
-    websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
+  switch (page) {
+    case 'index.html':
+      log.log('requesting main page');
+      websocket.send(JSON.stringify({ 'cmd': 'getMain' }));
+      break;
+    case 'settings.html':
+      log.log('requesting settings');
+      websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
+      break;
+    default:
+      log.error('unknown page');
+      break;
   }
 }
 
