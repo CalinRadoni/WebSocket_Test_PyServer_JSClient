@@ -15,35 +15,42 @@ settingsD = dict()
 
 async def broadcast_time():
     while True:
-        message = datetime.datetime.utcnow().isoformat() + "Z"
+        # message = datetime.datetime.utcnow().isoformat() + "Z"
+        message = datetime.datetime.now(datetime.UTC).isoformat() + "Z"
         out_object = {
             "time": message
         }
         websockets.broadcast(clients, json.dumps(out_object))
         await asyncio.sleep(1)
 
-async def handle_clients(websocket):
+async def handle_clients(serverConn):
     global clients
 
-    logging.info(f"New client requests {websocket.path}")
+    logging.info(f"New client requests {serverConn.remote_address}")
 
     try:
         # add the new client
-        clients.add(websocket)
+        clients.add(serverConn)
         logging.info(f'Client added, count is {len(clients)}')
 
         # process client messages
-        async for message in websocket:
+        async for message in serverConn:
             data = json.loads(message)
             if 'cmd' in data:
                 logging.info(f"Received command {data['cmd']}")
                 if data['cmd'] == 'getSettings':
                     sss = dict()
                     sss['settings'] = settingsD
-                    await websocket.send(json.dumps(sss))
+                    await serverConn.send(json.dumps(sss))
+                if data['cmd'] == 'setSettings':
+                    if 'data' in data:
+                        for key, value in data['data'].items():
+                            logging.info(f"{key}: {value}")
+                    else:
+                        logging.info('no data ?')
 
     finally:
-        clients.remove(websocket)
+        clients.remove(serverConn)
         logging.info(f'Client removed, count is {len(clients)}')
 
 def buildSettingsDict():

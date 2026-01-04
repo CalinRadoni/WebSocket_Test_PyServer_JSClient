@@ -53,6 +53,8 @@ class SettingsFormBuilder {
   #AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID) {
     let nodeDiv = document.createElement("div");
 
+    // For radio buttons 'name' is the name of the radio group
+    // ... not really needed by others
     let nodeName = inputData['name'];
     if (nodeName == null) {
       nodeName = fieldID;
@@ -81,6 +83,8 @@ class SettingsFormBuilder {
   }
 
   #AddTextInputRC(parentNode, inputData, fieldType, fieldVal, fieldID) {
+    // For radio buttons 'name' is the name of the radio group
+    // ... not really needed by others
     let nodeName = inputData['name'];
     if (nodeName == null) {
       nodeName = fieldID;
@@ -217,10 +221,20 @@ class SettingsFormBuilder {
   }
 
   ParseNode(node, outObj) {
+    // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input
+
     if (node.tagName == 'INPUT') {
-      let key = node.name.trim();
+      let key = node.id.trim();
       if (key.length > 0) {
-        outObj[key] = node.value.trim();
+        let val;
+        if (node.type == 'checkbox' || node.type == 'radio') {
+          val = node.checked ? 1 : 0;
+        }
+        else {
+          val = node.value.trim();
+        }
+        outObj[key] = val;
+        console.log(key + ": " + val);
       }
 
       return;
