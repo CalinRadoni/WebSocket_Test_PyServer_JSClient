@@ -17,9 +17,9 @@ class Logger {
     this.ce = ce;
   }
 
-  log(text)  { this.#write(text, this.ct); }
+  log(text) { this.#write(text, this.ct); }
   warn(text) { this.#write(text, this.cw); }
-  err(text)  { this.#write(text, this.ce); }
+  err(text) { this.#write(text, this.ce); }
 
   #write(text, msgColor) {
     let elem = document.getElementById(this.logID);

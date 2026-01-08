@@ -18,7 +18,7 @@ class SettingsForm {
 
   #SetFieldValue(id, value) {
     const elem = document.getElementById(id);
-    if(!elem) {
+    if (!elem) {
       console.error(`Element with id ${id} not found !`);
       return;
     }

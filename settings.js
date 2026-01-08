@@ -107,7 +107,7 @@ function onSettingFormReset() {
 
 function initButtons() {
   let elem = document.getElementById("btnSave");
-  if (elem) 
+  if (elem)
     elem.addEventListener('click', onSettingFormSubmit);
 
   elem = document.getElementById("btnReset");
@@ -121,7 +121,7 @@ function initButtons() {
   });
 }
 
-function initTZlist() { 
+function initTZlist() {
   const selectElem = document.getElementById('tz');
   if (!selectElem) return;
 
@@ -142,7 +142,7 @@ function initTZlist() {
     groups[region].forEach(tz => {
       const option = document.createElement('option');
       option.value = tz.name;
-      
+
       const optionText = document.createTextNode(tz.offset + ' ' + tz.location);
       option.appendChild(optionText);
 
@@ -164,7 +164,7 @@ function wXChkDHCP_Changed(event) {
   let elem;
   let deps;
 
-  switch(event.target.id) {
+  switch (event.target.id) {
     case 'w0UseDHCP':
       deps = ['w0IP', 'w0Mask', 'w0GW', 'w0DNS'];
       deps.forEach(dName => {

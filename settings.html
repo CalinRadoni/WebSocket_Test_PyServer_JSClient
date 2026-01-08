@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>ESP32 Demo site - Settings</title>
@@ -9,6 +10,7 @@
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <script type="module" src="./settings.js"></script>
 </head>
+
 <body>
   <header>
     <h1 class="c-main">ESP32 Demo site Settings</h1>
@@ -48,19 +50,23 @@
         </div>
         <div>
           <label for="w0IP">IPv4</label>
-          <input type="text" id="w0IP" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$" placeholder="xxx.xxx.xxx.xxx">
+          <input type="text" id="w0IP" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
+            placeholder="xxx.xxx.xxx.xxx">
         </div>
         <div>
           <label for="w0Mask">Mask</label>
-          <input type="text" id="w0Mask" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$" placeholder="xxx.xxx.xxx.xxx">
+          <input type="text" id="w0Mask" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
+            placeholder="xxx.xxx.xxx.xxx">
         </div>
         <div>
           <label for="w0GW">Gateway</label>
-          <input type="text" id="w0GW" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$" placeholder="xxx.xxx.xxx.xxx">
+          <input type="text" id="w0GW" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
+            placeholder="xxx.xxx.xxx.xxx">
         </div>
         <div>
           <label for="w0DNS">DNS</label>
-          <input type="text" id="w0DNS" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$" placeholder="xxx.xxx.xxx.xxx">
+          <input type="text" id="w0DNS" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
+            placeholder="xxx.xxx.xxx.xxx">
         </div>
       </fieldset>
       <fieldset>
@@ -117,9 +123,14 @@
   </main>
   <footer>
     <cream-row>
-      <cream-card><p id="currentTime"></p></cream-card>
-      <cream-card><p id="log"></p></cream-card>
+      <cream-card>
+        <p id="currentTime"></p>
+      </cream-card>
+      <cream-card>
+        <p id="log"></p>
+      </cream-card>
     </cream-row>
   </footer>
 </body>
+
 </html>
