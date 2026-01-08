@@ -1,11 +1,9 @@
-import { SettingsFormBuilder } from "./settings.js"
 import { Logger } from "./logger.js";
 
 // var gwURL = `ws://${window.location.hostname}/ws`;
 var gwURL = "ws://localhost:8001/";
 var websocket;
 
-const sfb = new SettingsFormBuilder(onSettingFormSubmit);
 const log = new Logger('log', 2500, 2500);
 
 function setLogColors() {
@@ -19,8 +17,8 @@ window.addEventListener('load', onLoad);
 
 function onLoad(event) {
   setLogColors();
-  wsConnect();
   initButtons();
+  wsConnect();
 }
 
 function wsConnect() {
@@ -33,21 +31,8 @@ function wsConnect() {
 function wsOnOpen(event) {
   log.log('ws connection opened');
 
-  var path = window.location.pathname;
-  var page = path.split("/").pop();
-  switch (page) {
-    case 'index.html':
-      log.log('requesting main page');
-      websocket.send(JSON.stringify({ 'cmd': 'getMain' }));
-      break;
-    case 'settings.html':
-      log.log('requesting settings');
-      websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
-      break;
-    default:
-      log.error('unknown page');
-      break;
-  }
+  log.log('requesting main page');
+  websocket.send(JSON.stringify({ 'cmd': 'getMain' }));
 }
 
 function wsOnClose(event) {
@@ -65,42 +50,19 @@ function wsOnMessage(event) {
   }
 
   if (jsonData !== null) {
-    Object.keys(jsonData).forEach((key) => {
-      let val = jsonData[key];
+    Object.keys(jsonData).forEach(key => {
+      const val = jsonData[key];
       switch (key) {
-        case "time":
-          let elem = document.getElementById('currentTime');
-          if (elem != null) {
+        case 'time':
+          const elem = document.getElementById('currentTime');
+          if (elem != null)
             elem.innerHTML = val;
-          }
-          break;
-        case "settings":
-          log.log('settings received');
-          sfb.Build(val);
           break;
         default:
           log.warn(`received ${key} key`);
           break;
       }
     })
-  }
-}
-
-function onSettingFormSubmit() {
-  let dataObj = {};
-  sfb.Save(dataObj);
-  if (Object.keys(dataObj).length > 0) {
-    let obj = {};
-    obj['cmd'] = 'setSettings';
-    obj['data'] = dataObj;
-
-    if (websocket.readyState == websocket.OPEN) {
-      log.log('new settings sent');
-      websocket.send(JSON.stringify(obj));
-    }
-    else {
-      log.err('websocket is NOT connected !');
-    }
   }
 }
 

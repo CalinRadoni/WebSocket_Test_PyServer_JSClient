@@ -1,263 +1,210 @@
-export { SettingsFormBuilder };
+import { SettingsForm } from "./settingsForm.js"
+import { TimeZoneSort, TimeZones } from "./timeZones.js";
+import { Logger } from "./logger.js";
 
-class SettingsFormBuilder {
-  constructor(settingFormSubmit) {
-    this.settingFormSubmit = settingFormSubmit;
+// var gwURL = `ws://${window.location.hostname}/ws`;
+var gwURL = "ws://localhost:8001/";
+var websocket;
+
+const sfb = new SettingsForm();
+const log = new Logger('log', 2500, 2500);
+
+const wXUseDHCP = ['w0UseDHCP', 'w1UseDHCP', 'w2UseDHCP'];
+
+function setLogColors() {
+  let styles = getComputedStyle(document.querySelector(':root'));
+  let ct = styles.getPropertyValue('--c-txt');
+  let ce = styles.getPropertyValue('--c-err');
+  log.setColors(ct, ct, ce);
+}
+
+window.addEventListener('load', onLoad);
+
+function onLoad(event) {
+  setLogColors();
+  initButtons();
+  initTZlist();
+  wsConnect();
+}
+
+function wsConnect() {
+  websocket = new WebSocket(gwURL);
+  websocket.onopen = wsOnOpen;
+  websocket.onclose = wsOnClose;
+  websocket.onmessage = wsOnMessage;
+}
+
+function wsOnOpen(event) {
+  log.log('ws connection opened');
+
+  log.log('requesting settings');
+  websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
+}
+
+function wsOnClose(event) {
+  log.err('ws connection closed');
+  setTimeout(wsConnect, 2000);
+}
+
+function wsOnMessage(event) {
+  let jsonData = null;
+  try {
+    jsonData = JSON.parse(event.data);
+  }
+  catch (error) {
+    log.err(`Failed to parse message as JSON: ${event.data}`);
   }
 
-  #AddLegend(parentNode, val) {
-    let nodeElem = document.createElement("legend");
-    let nodeText = document.createTextNode(val);
-    nodeElem.appendChild(nodeText);
-    parentNode.appendChild(nodeElem);
+  if (jsonData !== null) {
+    Object.keys(jsonData).forEach(key => {
+      const val = jsonData[key];
+      switch (key) {
+        case 'time':
+          const elem = document.getElementById('currentTime');
+          if (elem != null)
+            elem.innerHTML = val;
+          break;
+        case 'settings':
+          log.log('settings received');
+          sfb.Build(val);
+          dispatchChangeEvent();
+          break;
+        default:
+          log.warn(`received ${key} key`);
+          break;
+      }
+    })
   }
+}
 
-  #AddHint(parentNode, val) {
-    let nodeElem = document.createElement("p");
-    let nodeText = document.createTextNode(val);
-    nodeElem.appendChild(nodeText);
-    parentNode.appendChild(nodeElem);
-  }
+function onSettingFormSubmit() {
+  let dataObj = {};
+  sfb.Save(dataObj);
+  if (Object.keys(dataObj).length > 0) {
+    let obj = {};
+    obj['cmd'] = 'setSettings';
+    obj['data'] = dataObj;
 
-  #AddLabel(parentNode, val) {
-    let nodeElem = document.createElement("label");
-    nodeElem.setAttribute("for", "");
-    let nodeText = document.createTextNode(val);
-    nodeElem.appendChild(nodeText);
-    parentNode.appendChild(nodeElem);
-  }
-
-  #AddTextInputLabel(parentNode, id, val) {
-    let nodeElem = document.createElement("label");
-    nodeElem.setAttribute("for", id);
-    let nodeText = document.createTextNode(val);
-    nodeElem.appendChild(nodeText);
-    parentNode.appendChild(nodeElem);
-  }
-
-  #AddTextInputField(parentNode, fieldType, val, id, name, fmt, hint) {
-    let nodeElem = document.createElement("input");
-    nodeElem.setAttribute("type", fieldType);
-    nodeElem.setAttribute("id", id);
-    nodeElem.setAttribute("name", name);
-    nodeElem.setAttribute("value", val);
-    if (fmt != null) {
-      nodeElem.setAttribute("pattern", fmt);
-    }
-    if (hint != null) {
-      nodeElem.setAttribute("placeholder", hint);
-    }
-    parentNode.appendChild(nodeElem);
-  }
-
-  #AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID) {
-    let nodeDiv = document.createElement("div");
-
-    // For radio buttons 'name' is the name of the radio group
-    // ... not really needed by others
-    let nodeName = inputData['name'];
-    if (nodeName == null) {
-      nodeName = fieldID;
-    }
-
-    let nodeLabel = inputData['label'];
-    let fieldFmt = inputData['fmt'];
-    let fieldHint = inputData['hint'];
-
-    if (nodeLabel != null) {
-      this.#AddTextInputLabel(nodeDiv, fieldID, nodeLabel);
+    if (websocket.readyState == websocket.OPEN) {
+      log.log('new settings sent');
+      websocket.send(JSON.stringify(obj));
     }
     else {
-      console.warn("No label specified for %s", inputData['id']);
+      log.err('websocket NOT connected !');
     }
-    this.#AddTextInputField(nodeDiv, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
+  }
+}
 
-    if (inputData.hasOwnProperty('msg')) {
-      let nodeElem = document.createElement("p");
-      let nodeText = document.createTextNode(inputData['msg']);
-      nodeElem.appendChild(nodeText);
-      nodeDiv.appendChild(nodeElem);
-    }
+function onSettingFormReset() {
+  if (websocket.readyState == websocket.OPEN) {
+    log.log('requesting settings');
+    websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
+  }
+  else {
+    log.err('websocket NOT connected !');
+  }
+}
 
-    parentNode.appendChild(nodeDiv);
+function initButtons() {
+  let elem = document.getElementById("btnSave");
+  if (elem) 
+    elem.addEventListener('click', onSettingFormSubmit);
+
+  elem = document.getElementById("btnReset");
+  if (elem)
+    elem.addEventListener('click', onSettingFormReset);
+
+  wXUseDHCP.forEach(eName => {
+    elem = document.getElementById(eName);
+    if (elem)
+      elem.addEventListener('change', wXChkDHCP_Changed);
+  });
+}
+
+function initTZlist() { 
+  const selectElem = document.getElementById('tz');
+  if (!selectElem) return;
+
+  while (selectElem.firstChild) {
+    selectElem.removeChild(selectElem.lastChild);
   }
 
-  #AddTextInputRC(parentNode, inputData, fieldType, fieldVal, fieldID) {
-    // For radio buttons 'name' is the name of the radio group
-    // ... not really needed by others
-    let nodeName = inputData['name'];
-    if (nodeName == null) {
-      nodeName = fieldID;
-    }
+  const tzs = new TimeZones();
+  tzs.Load(true);
+  tzs.Sort(TimeZoneSort.ROL);
+  const utz = tzs.GetCurrentTimeZone();
 
-    let nodeLabel = inputData['label'];
-    let fieldFmt = inputData['fmt'];
-    let fieldHint = inputData['hint'];
+  const groups = tzs.GroupTimeZones();
+  Object.keys(groups).sort().forEach(region => {
+    const optgroup = document.createElement('optgroup');
+    optgroup.label = region;
 
-    this.#AddTextInputField(parentNode, fieldType, fieldVal, fieldID, nodeName, fieldFmt, fieldHint);
-    if (nodeLabel != null) {
-      this.#AddTextInputLabel(parentNode, fieldID, nodeLabel);
-    }
-    else {
-      console.warn("No label specified for %s", fieldID);
-    }
+    groups[region].forEach(tz => {
+      const option = document.createElement('option');
+      option.value = tz.name;
+      
+      const optionText = document.createTextNode(tz.offset + ' ' + tz.location);
+      option.appendChild(optionText);
 
-    parentNode.appendChild(document.createElement("br"));
-  }
+      if (tz.name == utz)
+        option.selected = true;
 
-  #AddInputField(parentNode, inputData) {
-    if (inputData.constructor != Object) {
-      console.error("The input data should be an object");
-      return;
-    }
-
-    if (!(inputData.hasOwnProperty('type'))) {
-      console.error("The field must have a 'type' property !");
-      return;
-    }
-    if (!(inputData.hasOwnProperty('val'))) {
-      console.error("The field must have a 'val' property !");
-      return;
-    }
-
-    const fieldType = inputData['type'];
-    const fieldVal = inputData['val'];
-
-    if (fieldType == 'legend') {
-      this.#AddLegend(parentNode, fieldVal);
-      return;
-    }
-
-    if (fieldType == 'hint') {
-      this.#AddHint(parentNode, fieldVal);
-      return;
-    }
-
-    if (fieldType == 'label') {
-      this.#AddLabel(parentNode, fieldVal);
-      return;
-    }
-
-    if (!(inputData.hasOwnProperty('id'))) {
-      console.error("The field must have a 'id' property !");
-      return;
-    }
-    const fieldID = inputData['id'];
-
-    if (fieldType == 'text' || fieldType == 'password' ||
-        fieldType == 'number' || fieldType == 'email' ||
-        fieldType == 'date' || fieldType == 'time')
-    {
-      this.#AddTextInput(parentNode, inputData, fieldType, fieldVal, fieldID);
-      return;
-    }
-
-    if (fieldType == 'checkbox' || fieldType == 'radio') {
-      this.#AddTextInputRC(parentNode, inputData, fieldType, fieldVal, fieldID);
-      return;
-    }
-
-    console.error("Unknown field type %s !", fieldType);
-  }
-
-  #AddFieldset(parentNode, key, inputData) {
-    const nodeElem = document.createElement("fieldset");
-
-    if (!(Array.isArray(inputData))) {
-      console.error(`The input data for ${key} should be an array !`)
-      return;
-    }
-
-    inputData.forEach((elem) => {
-      this.#AddInputField(nodeElem, elem);
+      optgroup.appendChild(option);
     });
 
-    parentNode.appendChild(nodeElem);
+    selectElem.appendChild(optgroup);
+  });
+}
+
+function wXChkDHCP_Changed(event) {
+  // this and event.target should be the same when added with 'addEventListener'
+  // I use event.target to avoid confusion if call is changed
+
+  const checked = event.target.checked;
+  let elem;
+  let deps;
+
+  switch(event.target.id) {
+    case 'w0UseDHCP':
+      deps = ['w0IP', 'w0Mask', 'w0GW', 'w0DNS'];
+      deps.forEach(dName => {
+        elem = document.getElementById(dName);
+        if (elem)
+          elem.disabled = checked;
+      });
+      break;
+
+    case 'w1UseDHCP':
+      deps = ['w1IP', 'w1Mask', 'w1GW', 'w1DNS'];
+      deps.forEach(dName => {
+        elem = document.getElementById(dName);
+        if (elem)
+          elem.disabled = checked;
+      });
+      break;
+
+    case 'w2UseDHCP':
+      deps = ['w2IP', 'w2Mask', 'w2GW', 'w2DNS'];
+      deps.forEach(dName => {
+        elem = document.getElementById(dName);
+        if (elem)
+          elem.disabled = checked;
+      });
+      break;
   }
+}
 
-  #AddFormButtons(parentNode) {
-    const nodeFs = document.createElement("fieldset");
+function dispatchChangeEvent() {
+  const event = new Event('change');
+  let elem;
 
-    let nodeElem;
-    let nodeText;
+  wXUseDHCP.forEach(eName => {
+    elem = document.getElementById(eName);
+    if (elem)
+      elem.dispatchEvent(event);
+  });
 
-    nodeElem = document.createElement("button");
-    nodeElem.setAttribute("type", "button");
-    nodeText = document.createTextNode("Save");
-    nodeElem.appendChild(nodeText);
-    nodeElem.addEventListener('click', this.settingFormSubmit);
-    nodeFs.appendChild(nodeElem);
-
-    nodeElem = document.createElement("button");
-    nodeElem.setAttribute("type", "reset");
-    nodeText = document.createTextNode("Reset");
-    nodeElem.appendChild(nodeText);
-    nodeFs.appendChild(nodeElem);
-
-    parentNode.appendChild(nodeFs);
-  }
-
-  Build(jsonSettingsData) {
-    let ds = document.getElementById('settings');
-    if (!ds) {
-      console.error('settings form not found !');
-      return;
-    }
-
-    while (ds.firstChild) {
-      ds.removeChild(ds.firstChild);
-    }
-
-    if (jsonSettingsData.constructor != Object) {
-      console.log("The input data should be an object");
-      return;
-    }
-
-    for (const [key, value] of Object.entries(jsonSettingsData)) {
-      this.#AddFieldset(ds, key, value);
-    }
-
-    this.#AddFormButtons(ds);
-  }
-
-  ParseNode(node, outObj) {
-    // https://developer.mozilla.org/en-US/docs/Web/HTML/Reference/Elements/input
-
-    if (node.tagName == 'INPUT') {
-      let key = node.id.trim();
-      if (key.length > 0) {
-        let val;
-        if (node.type == 'checkbox' || node.type == 'radio') {
-          val = node.checked ? 1 : 0;
-        }
-        else {
-          val = node.value.trim();
-        }
-        outObj[key] = val;
-        console.log(key + ": " + val);
-      }
-
-      return;
-    }
-
-    if (node.children.length > 0) {
-      for (const child of node.children) {
-        this.ParseNode(child, outObj);
-      }
-    }
-  }
-
-  Save(outObj) {
-    let ds = document.getElementById('settings');
-    if (!ds) {
-      console.error('settings form not found !');
-      return;
-    }
-    if (!ds.hasChildNodes()) {
-      console.warn('No child nodes ! Nothing to save.')
-      return;
-    }
-
-    this.ParseNode(ds, outObj);
-  }
-};
+  elem = document.getElementById('chkNTP');
+  if (elem)
+    elem.dispatchEvent(event);
+}

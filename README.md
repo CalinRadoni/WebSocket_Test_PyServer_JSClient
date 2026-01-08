@@ -13,8 +13,9 @@ I have used these to build the `HTML` and `JavaScript` code for the embedded web
 python3 -m venv venv
 # activate it
 source  ./venv/bin/activate
-# install websockets
-pip3 install websockets
+# install websockets and pytz
+python3 -m pip install websockets
+python3 -m pip install pytz
 # check websockets
 python3 -m websockets --version
 # deactivate the virtual environment
@@ -42,7 +43,9 @@ The clients should connect to the `"ws://localhost:8001/"` address.
 ## Bits and pieces
 
 - the CSS file is from [CreamCSS](https://github.com/CalinRadoni/CreamCSS)
-- the `html` and `js` files are from `ESP32Board` component. See [RobotT1](https://github.com/CalinRadoni/RobotT1) for usage information.
+- the `html` and `js` files are from `ESP32Board` component. See usage in:
+    - [pax-Gateway](https://github.com/CalinRadoni/pax-Gateway)
+    - (old) [RobotT1](https://github.com/CalinRadoni/RobotT1)
 
 ## License
 
