@@ -1,7 +1,6 @@
+import { getWebsocketURL } from "./common.js";
 import { Logger } from "./logger.js";
 
-// var gwURL = `ws://${window.location.hostname}/ws`;
-var gwURL = "ws://localhost:8001/";
 var websocket;
 
 const log = new Logger('log', 2500, 2500);
@@ -22,6 +21,7 @@ function onLoad(event) {
 }
 
 function wsConnect() {
+  const gwURL = getWebsocketURL();
   websocket = new WebSocket(gwURL);
   websocket.onopen = wsOnOpen;
   websocket.onclose = wsOnClose;

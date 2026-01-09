@@ -1,10 +1,9 @@
+import { getWebsocketURL } from "./common.js";
 import { SettingsForm } from "./settingsForm.js"
 import { CheckboxHandler } from "./checkbox.js"
 import { TimeZoneSort, TimeZones } from "./timeZones.js";
 import { Logger } from "./logger.js";
 
-// var gwURL = `ws://${window.location.hostname}/ws`;
-var gwURL = "ws://localhost:8001/";
 var websocket;
 
 const sfb = new SettingsForm();
@@ -29,6 +28,7 @@ function onLoad(event) {
 }
 
 function wsConnect() {
+  const gwURL = getWebsocketURL();
   websocket = new WebSocket(gwURL);
   websocket.onopen = wsOnOpen;
   websocket.onclose = wsOnClose;
