@@ -1,4 +1,5 @@
 import { SettingsForm } from "./settingsForm.js"
+import { CheckboxHandler } from "./checkbox.js"
 import { TimeZoneSort, TimeZones } from "./timeZones.js";
 import { Logger } from "./logger.js";
 
@@ -9,7 +10,7 @@ var websocket;
 const sfb = new SettingsForm();
 const log = new Logger('log', 2500, 2500);
 
-const wXUseDHCP = ['w0UseDHCP', 'w1UseDHCP', 'w2UseDHCP'];
+const ckhList = [];
 
 function setLogColors() {
   let styles = getComputedStyle(document.querySelector(':root'));
@@ -105,6 +106,12 @@ function onSettingFormReset() {
   }
 }
 
+function dispatchChangeEvent() {
+  const event = new Event('change');
+
+  ckhList.forEach(chk => chk.dispatchEvent(event));
+}
+
 function initButtons() {
   let elem = document.getElementById("btnSave");
   if (elem)
@@ -114,11 +121,17 @@ function initButtons() {
   if (elem)
     elem.addEventListener('click', onSettingFormReset);
 
-  wXUseDHCP.forEach(eName => {
-    elem = document.getElementById(eName);
-    if (elem)
-      elem.addEventListener('change', wXChkDHCP_Changed);
-  });
+  const ckhw0 = new CheckboxHandler('w0UseDHCP', ['w0IP', 'w0Mask', 'w0GW', 'w0DNS']);
+  const ckhw1 = new CheckboxHandler('w0UseDHCP', ['w1IP', 'w1Mask', 'w1GW', 'w1DNS']);
+  const ckhw2 = new CheckboxHandler('w0UseDHCP', ['w2IP', 'w2Mask', 'w2GW', 'w2DNS']);
+  const ckhNTP = new CheckboxHandler('chkNTP', ['srvNTP'], true);
+
+  ckhList.push(ckhw0);
+  ckhList.push(ckhw1);
+  ckhList.push(ckhw2);
+  ckhList.push(ckhNTP);
+
+  ckhList.forEach(chk => chk.bind());
 }
 
 function initTZlist() {
@@ -154,57 +167,4 @@ function initTZlist() {
 
     selectElem.appendChild(optgroup);
   });
-}
-
-function wXChkDHCP_Changed(event) {
-  // this and event.target should be the same when added with 'addEventListener'
-  // I use event.target to avoid confusion if call is changed
-
-  const checked = event.target.checked;
-  let elem;
-  let deps;
-
-  switch (event.target.id) {
-    case 'w0UseDHCP':
-      deps = ['w0IP', 'w0Mask', 'w0GW', 'w0DNS'];
-      deps.forEach(dName => {
-        elem = document.getElementById(dName);
-        if (elem)
-          elem.disabled = checked;
-      });
-      break;
-
-    case 'w1UseDHCP':
-      deps = ['w1IP', 'w1Mask', 'w1GW', 'w1DNS'];
-      deps.forEach(dName => {
-        elem = document.getElementById(dName);
-        if (elem)
-          elem.disabled = checked;
-      });
-      break;
-
-    case 'w2UseDHCP':
-      deps = ['w2IP', 'w2Mask', 'w2GW', 'w2DNS'];
-      deps.forEach(dName => {
-        elem = document.getElementById(dName);
-        if (elem)
-          elem.disabled = checked;
-      });
-      break;
-  }
-}
-
-function dispatchChangeEvent() {
-  const event = new Event('change');
-  let elem;
-
-  wXUseDHCP.forEach(eName => {
-    elem = document.getElementById(eName);
-    if (elem)
-      elem.dispatchEvent(event);
-  });
-
-  elem = document.getElementById('chkNTP');
-  if (elem)
-    elem.dispatchEvent(event);
 }
