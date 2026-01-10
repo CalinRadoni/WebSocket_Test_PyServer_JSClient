@@ -46,24 +46,24 @@
         </div>
         <div>
           <input type="checkbox" id="w0UseDHCP"><label for="w0UseDHCP">Use DHCP</label><br>
-          <p>Most of the time the addresses are set using DHCP</p>
+          <p style="margin-top: -0.5rem">Most of the time the addresses are set using DHCP</p>
         </div>
-        <div>
+        <div id="w00">
           <label for="w0IP">IPv4</label>
           <input type="text" id="w0IP" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
             placeholder="xxx.xxx.xxx.xxx">
         </div>
-        <div>
+        <div id="w01">
           <label for="w0Mask">Mask</label>
           <input type="text" id="w0Mask" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
             placeholder="xxx.xxx.xxx.xxx">
         </div>
-        <div>
+        <div id="w02">
           <label for="w0GW">Gateway</label>
           <input type="text" id="w0GW" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
             placeholder="xxx.xxx.xxx.xxx">
         </div>
-        <div>
+        <div id="w03">
           <label for="w0DNS">DNS</label>
           <input type="text" id="w0DNS" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
             placeholder="xxx.xxx.xxx.xxx">
@@ -76,24 +76,25 @@
           <select id="tz"></select>
         </div>
         <input type="checkbox" id="chkNTP"><label for="chkNTP">Use NTP</label><br>
-        <div>
+        <div id="divNTP">
           <label for="srvNTP">NTP Server</label>
           <input type="text" id="srvNTP" placeholder="pool.ntp.org" value="">
         </div>
       </fieldset>
       <fieldset>
         <legend>Telegram</legend>
-        <div>
-          <label for="chatID">Chat ID</label>
-          <input type="text" id="chatID" value="">
+        <input type="checkbox" id="chkTelegram"><label for="chkTelegram">Use Telegram</label><br>
+        <div id="tlgD0">
+          <label for="telegramChatID">Chat ID</label>
+          <input type="text" id="telegramChatID" value="">
         </div>
-        <div>
-          <label for="botName">Bot name</label>
-          <input type="text" id="botName" value="">
+        <div id="tlgD1">
+          <label for="telegramBotName">Bot name</label>
+          <input type="text" id="telegramBotName" value="">
         </div>
-        <div>
-          <label for="botToken">Bot token</label>
-          <input type="text" id="botToken" value="">
+        <div id="tlgD2">
+          <label for="telegramBotToken">Bot token</label>
+          <input type="text" id="telegramBotToken" value="">
         </div>
       </fieldset>
       <fieldset>

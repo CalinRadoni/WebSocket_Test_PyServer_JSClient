@@ -1,5 +1,21 @@
+/**
+ * @file {@link TimeZones} Manage a list of known timezones.
+ * 
+ * - The list can be sorted, {@link TimeZones.Sort}, by region, location and offset - @see {@link TimeZoneSort};
+ * - The timezones can be grouped by region, {@link TimeZones.GroupTimeZones}.
+ *   Grouping is usefull if displayed in a list, like `select` + `optgroup`s;
+ * - {@link TimeZones.GetCurrentTimeZone} returns the timezone of user's browser.
+ * 
+ * @version 1.0.0
+ * @copyright Calin Radoni 2026 {@link https://github.com/CalinRadoni}
+ * @license MIT License
+ */
+
 export { TimeZones, TimeZoneSort, TZO };
 
+/**
+ * These are the sorting options used by `TimeZones.Sort` function.
+ */
 const TimeZoneSort = Object.freeze({
   None: 0,
   RLO: 1, // region / location / offset
@@ -8,29 +24,26 @@ const TimeZoneSort = Object.freeze({
   OLR: 4  // offset / location / region
 });
 
+/**
+ * This is the definition of timezone objects used by `TimeZones` internally.
+ */
 class TZO {
   constructor(tzName) {
     this.name = tzName;
+    this.region = '';
+    this.location = '';
+    this.offset = NaN;
+
     const parts = tzName.split('/');
-    switch (parts.length) {
-      case 0:
-        break;
-      case 1:
-        this.region = tzName;
-        this.location = '';
-        this.offset = NaN;
-        break;
-      case 2:
-        this.region = parts[0];
-        this.location = parts[1];
-        this.offset = NaN;
-        break;
-      default:
-        this.region = parts[0];
-        this.location = parts.slice(1).join('/');
-        this.offset = NaN;
-        break;
-    }
+    if (parts.length == 0) return;
+
+    this.region = parts[0];
+    if (parts.length == 1) return;
+
+    if (parts.length == 2)
+      this.location = parts[1];
+    else
+      this.location = parts.slice(1).join('/');
   }
 
   Set(region, location, offset = NaN) {
@@ -55,6 +68,13 @@ class TimeZones {
     this.groups = {};
   }
 
+  /**
+   * Returns the list of timezones.
+   * 
+   * If `geographicalOnly` is `true`, then:
+   *    - `UTC` is excluded
+   *    - `Etc/...` are excluded
+   */
   Load(geographicalOnly = true) {
     const allTimeZones = Intl.supportedValuesOf('timeZone');
     const date = new Date();
@@ -76,6 +96,13 @@ class TimeZones {
     });
   }
 
+  /**
+   * Transform a `GMT+/-...` string to the corresponding number.
+   * Any other string should return 0.
+   * 
+   * @example
+   * GMT-02:30 is converted to -2.5
+   */
   GMT2Number(str) {
     if (!str.toUpperCase().startsWith('GMT'))
       return 0;
@@ -101,6 +128,9 @@ class TimeZones {
     return this.GMT2Number(o1) - this.GMT2Number(o2);
   }
 
+  /**
+   * Sort the list of timezones based on the `tzs` parameter.
+   */
   Sort(tzs) {
     let res;
     switch (tzs) {
@@ -108,10 +138,10 @@ class TimeZones {
         break;
       case TimeZoneSort.RLO:
         this.zones.sort((a, b) => {
-          res = a.region.attr.localeCompare(b.region.attr);
+          res = a.region.localeCompare(b.region);
           if (res != 0)
             return res;
-          res = a.location.attr.localeCompare(b.location.attr);
+          res = a.location.localeCompare(b.location);
           if (res != 0)
             return res;
           return this.CompareOffsets(a.offset, b.offset);
@@ -130,10 +160,10 @@ class TimeZones {
         break;
       case TimeZoneSort.LRO:
         this.zones.sort((a, b) => {
-          res = a.location.attr.localeCompare(b.location.attr);
+          res = a.location.localeCompare(b.location);
           if (res != 0)
             return res;
-          res = a.region.attr.localeCompare(b.region.attr);
+          res = a.region.localeCompare(b.region);
           if (res != 0)
             return res;
           return this.CompareOffsets(a.offset, b.offset);
@@ -144,10 +174,10 @@ class TimeZones {
           res = this.CompareOffsets(a.offset, b.offset);
           if (res != 0)
             return res;
-          res = a.location.attr.localeCompare(b.location.attr);
+          res = a.location.localeCompare(b.location);
           if (res != 0)
             return res;
-          return a.region.attr.localeCompare(b.region.attr);
+          return a.region.localeCompare(b.region);
         });
         break;
       default:
@@ -156,6 +186,10 @@ class TimeZones {
     }
   }
 
+  /**
+   * Returns an object with properties named after regions.
+   * Each *region* member contains an array with all timezones from that region.
+   */
   GroupTimeZones() {
     this.groups = {};
 
@@ -168,6 +202,9 @@ class TimeZones {
     return this.groups;
   }
 
+  /**
+   * Returns the timezone of user's browser
+   */
   GetCurrentTimeZone() {
     const dateTimeFormat = new Intl.DateTimeFormat();
     return dateTimeFormat.resolvedOptions().timeZone;

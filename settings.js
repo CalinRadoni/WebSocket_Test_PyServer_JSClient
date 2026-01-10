@@ -121,15 +121,27 @@ function initButtons() {
   if (elem)
     elem.addEventListener('click', onSettingFormReset);
 
-  const ckhw0 = new CheckboxHandler('w0UseDHCP', ['w0IP', 'w0Mask', 'w0GW', 'w0DNS']);
-  const ckhw1 = new CheckboxHandler('w0UseDHCP', ['w1IP', 'w1Mask', 'w1GW', 'w1DNS']);
-  const ckhw2 = new CheckboxHandler('w0UseDHCP', ['w2IP', 'w2Mask', 'w2GW', 'w2DNS']);
-  const ckhNTP = new CheckboxHandler('chkNTP', ['srvNTP'], true);
+  const ckhw0 = new CheckboxHandler('w0UseDHCP',
+    ['w0IP', 'w0Mask', 'w0GW', 'w0DNS'], ['w00', 'w01', 'w02', 'w03'], true);
+  const ckhw1 = new CheckboxHandler('w0UseDHCP',
+    ['w1IP', 'w1Mask', 'w1GW', 'w1DNS'], ['w10', 'w11', 'w12', 'w13'], true);
+  const ckhw2 = new CheckboxHandler('w0UseDHCP',
+    ['w2IP', 'w2Mask', 'w2GW', 'w2DNS'], ['w20', 'w21', 'w22', 'w23'], true);
+  const ckhNTP = new CheckboxHandler('chkNTP', ['srvNTP'], ['divNTP'], false);
+  const ckhTelegram = new CheckboxHandler('chkTelegram',
+    ['telegramChatID', 'telegramBotName', 'telegramBotToken'], ['tlgD0', 'tlgD1', 'tlgD2'], false);
 
   ckhList.push(ckhw0);
   ckhList.push(ckhw1);
   ckhList.push(ckhw2);
   ckhList.push(ckhNTP);
+  ckhList.push(ckhTelegram);
+
+  elem = document.getElementById('chkTelegram');
+  if (elem) {
+    elem.checked = false;
+    elem.disabled = true;
+  }
 
   ckhList.forEach(chk => chk.bind());
 }
