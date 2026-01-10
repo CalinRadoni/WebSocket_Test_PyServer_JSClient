@@ -1,7 +1,7 @@
 /**
  * @file {@link CheckboxHandler} Manage a HTML checkbox and associated elements
  * 
- * @version 1.2.0
+ * @version 1.3.0
  * @copyright Calin Radoni 2026 {@link https://github.com/CalinRadoni}
  * @license MIT License
  */
@@ -74,6 +74,15 @@ class CheckboxHandler {
       default:
         break;
     }
+  }
+  
+  /**
+   * Set checked state
+   */
+  set(check) {
+    const elem = document.getElementById(this.id);
+    if (elem)
+      elem.checked = check;
   }
 
   /**

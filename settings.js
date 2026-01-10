@@ -1,6 +1,7 @@
 import { getWebsocketURL } from "./common.js";
-import { SettingsForm } from "./settingsForm.js"
-import { CheckboxHandler } from "./checkbox.js"
+import { SettingsForm } from "./settingsForm.js";
+import { AddWiFiFields } from "./wifiSettings.js";
+import { CheckboxHandler } from "./checkbox.js";
 import { TimeZoneSort, TimeZones } from "./timeZones.js";
 import { Logger } from "./logger.js";
 
@@ -22,8 +23,12 @@ window.addEventListener('load', onLoad);
 
 function onLoad(event) {
   setLogColors();
-  initButtons();
+
+  addWiFiSettings();
+  initCheckboxes();
   initTZlist();
+  initButtons();
+
   wsConnect();
 }
 
@@ -112,20 +117,25 @@ function dispatchChangeEvent() {
   ckhList.forEach(chk => chk.dispatchEvent(event));
 }
 
-function initButtons() {
-  let elem = document.getElementById("btnSave");
-  if (elem)
-    elem.addEventListener('click', onSettingFormSubmit);
+function addWiFiSettings() {
+  let elem = document.getElementById('w0Settings');
+  if (elem) elem.open = true;
+  elem = document.getElementById('w1Settings');
+  if (elem) elem.open = false;
+  elem = document.getElementById('w2Settings');
+  if (elem) elem.open = false;
 
-  elem = document.getElementById("btnReset");
-  if (elem)
-    elem.addEventListener('click', onSettingFormReset);
+  AddWiFiFields(0, true);
+  AddWiFiFields(1, false);
+  AddWiFiFields(2, false);
+}
 
+function initCheckboxes() {
   const ckhw0 = new CheckboxHandler('w0UseDHCP',
     ['w0IP', 'w0Mask', 'w0GW', 'w0DNS'], ['w00', 'w01', 'w02', 'w03'], true);
-  const ckhw1 = new CheckboxHandler('w0UseDHCP',
+  const ckhw1 = new CheckboxHandler('w1UseDHCP',
     ['w1IP', 'w1Mask', 'w1GW', 'w1DNS'], ['w10', 'w11', 'w12', 'w13'], true);
-  const ckhw2 = new CheckboxHandler('w0UseDHCP',
+  const ckhw2 = new CheckboxHandler('w2UseDHCP',
     ['w2IP', 'w2Mask', 'w2GW', 'w2DNS'], ['w20', 'w21', 'w22', 'w23'], true);
   const ckhNTP = new CheckboxHandler('chkNTP', ['srvNTP'], ['divNTP'], false);
   const ckhTelegram = new CheckboxHandler('chkTelegram',
@@ -137,13 +147,20 @@ function initButtons() {
   ckhList.push(ckhNTP);
   ckhList.push(ckhTelegram);
 
-  elem = document.getElementById('chkTelegram');
+  // the Telegram functionality is not implemented yet
+  let elem = document.getElementById('chkTelegram');
   if (elem) {
     elem.checked = false;
     elem.disabled = true;
   }
 
   ckhList.forEach(chk => chk.bind());
+
+  ckhw0.set(true);
+  ckhw1.set(true);
+  ckhw2.set(true);
+  ckhNTP.set(true);
+  dispatchChangeEvent();
 }
 
 function initTZlist() {
@@ -179,4 +196,14 @@ function initTZlist() {
 
     selectElem.appendChild(optgroup);
   });
+}
+
+function initButtons() {
+  let elem = document.getElementById("btnSave");
+  if (elem)
+    elem.addEventListener('click', onSettingFormSubmit);
+
+  elem = document.getElementById("btnReset");
+  if (elem)
+    elem.addEventListener('click', onSettingFormReset);
 }

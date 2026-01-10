@@ -26,75 +26,45 @@
       <fieldset>
         <legend></legend>
         <div>
-          <label for="deviceName">Device name</label>
-          <input type="text" id="deviceName" value="">
+          <label for="deviceName">Device name</label><input type="text" id="deviceName" value="">
         </div>
         <div>
-          <label for="mDNS">mDNS name</label>
-          <input type="text" id="mDNS" value="">
+          <label for="mDNS">mDNS name</label><input type="text" id="mDNS" value="">
         </div>
       </fieldset>
-      <fieldset>
-        <legend>WiFi configuration</legend>
-        <div>
-          <label for="w0SSID">SSID</label>
-          <input type="text" id="w0SSID" value="">
-        </div>
-        <div>
-          <label for="w0Pass">Password</label>
-          <input type="password" id="w0Pass" value="">
-        </div>
-        <div>
-          <input type="checkbox" id="w0UseDHCP"><label for="w0UseDHCP">Use DHCP</label><br>
-          <p style="margin-top: -0.5rem">Most of the time the addresses are set using DHCP</p>
-        </div>
-        <div id="w00">
-          <label for="w0IP">IPv4</label>
-          <input type="text" id="w0IP" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
-            placeholder="xxx.xxx.xxx.xxx">
-        </div>
-        <div id="w01">
-          <label for="w0Mask">Mask</label>
-          <input type="text" id="w0Mask" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
-            placeholder="xxx.xxx.xxx.xxx">
-        </div>
-        <div id="w02">
-          <label for="w0GW">Gateway</label>
-          <input type="text" id="w0GW" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
-            placeholder="xxx.xxx.xxx.xxx">
-        </div>
-        <div id="w03">
-          <label for="w0DNS">DNS</label>
-          <input type="text" id="w0DNS" value="" pattern="^((25[0-5]|(2[0-4]|1\d|[1-9]|)\d)\.?\b){4}$"
-            placeholder="xxx.xxx.xxx.xxx">
-        </div>
-      </fieldset>
+      <details id="w0Settings">
+        <summary>WiFi settings 1</summary>
+        <fieldset id="w0Fields"></fieldset>
+      </details>
+      <details id="w1Settings">
+        <summary>WiFi settings 2</summary>
+        <fieldset id="w1Fields"></fieldset>
+      </details>
+      <details id="w2Settings">
+        <summary>WiFi settings 3</summary>
+        <fieldset id="w2Fields"></fieldset>
+      </details>
       <fieldset>
         <legend>Time</legend>
         <div>
-          <label for="tz">Timezone</label>
-          <select id="tz"></select>
+          <label for="tz">Timezone</label><select id="tz"></select>
         </div>
         <input type="checkbox" id="chkNTP"><label for="chkNTP">Use NTP</label><br>
         <div id="divNTP">
-          <label for="srvNTP">NTP Server</label>
-          <input type="text" id="srvNTP" placeholder="pool.ntp.org" value="">
+          <label for="srvNTP">NTP Server</label><input type="text" id="srvNTP" placeholder="pool.ntp.org" value="">
         </div>
       </fieldset>
       <fieldset>
         <legend>Telegram</legend>
         <input type="checkbox" id="chkTelegram"><label for="chkTelegram">Use Telegram</label><br>
         <div id="tlgD0">
-          <label for="telegramChatID">Chat ID</label>
-          <input type="text" id="telegramChatID" value="">
+          <label for="telegramChatID">Chat ID</label><input type="text" id="telegramChatID" value="">
         </div>
         <div id="tlgD1">
-          <label for="telegramBotName">Bot name</label>
-          <input type="text" id="telegramBotName" value="">
+          <label for="telegramBotName">Bot name</label><input type="text" id="telegramBotName" value="">
         </div>
         <div id="tlgD2">
-          <label for="telegramBotToken">Bot token</label>
-          <input type="text" id="telegramBotToken" value="">
+          <label for="telegramBotToken">Bot token</label><input type="text" id="telegramBotToken" value="">
         </div>
       </fieldset>
       <fieldset>
