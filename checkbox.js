@@ -65,14 +65,15 @@ class CheckboxHandler {
           if (elem)
             elem.disabled = disableValue;
         });
+
         this.hElems.forEach(eName => {
           const elem = document.getElementById(eName);
           if (elem)
             elem.style.display = disableValue ? 'none' : 'block';
         });
         break;
-      default:
-        break;
+
+      default: break;
     }
   }
   

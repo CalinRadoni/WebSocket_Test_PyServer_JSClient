@@ -10,6 +10,8 @@ var websocket;
 const sfb = new SettingsForm();
 const log = new Logger('log', 2500, 2500);
 
+const wifiCfgCnt = 3;
+
 const ckhList = [];
 
 function setLogColors() {
@@ -118,25 +120,21 @@ function dispatchChangeEvent() {
 }
 
 function addWiFiSettings() {
-  let elem = document.getElementById('w0Settings');
-  if (elem) elem.open = true;
-  elem = document.getElementById('w1Settings');
-  if (elem) elem.open = false;
-  elem = document.getElementById('w2Settings');
-  if (elem) elem.open = false;
+  for (let i = 0; i < wifiCfgCnt; ++i) {
+    let elem = document.getElementById("w" + i + "Settings");
+    if (elem) {
+      elem.open = i == 0 ? true : false;
+    }
 
-  AddWiFiFields(0, true);
-  AddWiFiFields(1, false);
-  AddWiFiFields(2, false);
+    AddWiFiFields(i);
+  }
 }
 
 function initCheckboxes() {
-  const ckhw0 = new CheckboxHandler('w0UseDHCP',
-    ['w0IP', 'w0Mask', 'w0GW', 'w0DNS'], ['w00', 'w01', 'w02', 'w03'], true);
-  const ckhw1 = new CheckboxHandler('w1UseDHCP',
-    ['w1IP', 'w1Mask', 'w1GW', 'w1DNS'], ['w10', 'w11', 'w12', 'w13'], true);
-  const ckhw2 = new CheckboxHandler('w2UseDHCP',
-    ['w2IP', 'w2Mask', 'w2GW', 'w2DNS'], ['w20', 'w21', 'w22', 'w23'], true);
+  const ckhw0 = new CheckboxHandler('WiFiCfg0UseDHCP', null, ['WiFiCfg0DHCPdiv'], true);
+  const ckhw1 = new CheckboxHandler('WiFiCfg1UseDHCP', null, ['WiFiCfg1DHCPdiv'], true);
+  const ckhw2 = new CheckboxHandler('WiFiCfg2UseDHCP', null, ['WiFiCfg2DHCPdiv'], true);
+
   const ckhNTP = new CheckboxHandler('chkNTP', ['srvNTP'], ['divNTP'], false);
   const ckhTelegram = new CheckboxHandler('chkTelegram',
     ['telegramChatID', 'telegramBotName', 'telegramBotToken'], ['tlgD0', 'tlgD1', 'tlgD2'], false);
@@ -164,7 +162,7 @@ function initCheckboxes() {
 }
 
 function initTZlist() {
-  const selectElem = document.getElementById('tz');
+  const selectElem = document.getElementById('timeZone');
   if (!selectElem) return;
 
   while (selectElem.firstChild) {

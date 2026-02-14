@@ -16,7 +16,7 @@ class SettingsForm {
     });
   }
 
-  #SetFieldValue(id, value) {
+  #SetFieldValue(id, value, dGroup, dID) {
     const elem = document.getElementById(id);
     if (!elem) {
       console.error(`Element with id ${id} not found !`);
@@ -34,6 +34,24 @@ class SettingsForm {
     else {
       elem.value = value;
     }
+
+    if (dGroup && dID) {
+      elem.dataset.group = dGroup;
+      elem.dataset.id = dID;
+    }
+  }
+
+  #SetFieldsFromObject(name, object) {
+    if (object.constructor != Object) {
+      console.error(`The value of ${name} should be an object !`);
+      return;
+    }
+
+    Object.keys(object).forEach(key => {
+      const val = object[key];
+      const fieldID = name + key;
+      this.#SetFieldValue(fieldID, val, name, key);
+    });
   }
 
   Build(jsonSettingsData) {
@@ -43,28 +61,18 @@ class SettingsForm {
       return;
     }
 
-    if (!(Array.isArray(jsonSettingsData))) {
-      console.error(`The input data should be an array !`)
+    if (jsonSettingsData.constructor != Object) {
+      console.error("The input data should be an object");
       return;
     }
-
-    // set input fields
-    jsonSettingsData.forEach(elem => {
-      if (elem.constructor != Object) {
-        console.error("The input data should be an object");
-        return;
+    Object.keys(jsonSettingsData).forEach(key => {
+      const val = jsonSettingsData[key];
+      if (val.constructor == Object) {
+        this.#SetFieldsFromObject(key, val);
       }
-
-      if (!(elem.hasOwnProperty('id'))) {
-        console.error("The object must have a 'id' property !");
-        return;
+      else {
+        this.#SetFieldValue(key, val);
       }
-      if (!(elem.hasOwnProperty('val'))) {
-        console.error("The object must have a 'val' property !");
-        return;
-      }
-
-      this.#SetFieldValue(elem['id'], elem['val']);
     });
   }
 
@@ -81,9 +89,16 @@ class SettingsForm {
         else {
           val = node.value;
         }
-        outObj[key] = val;
 
-        console.log(key + ": " + val);
+        if (node.dataset.group && node.dataset.id) {
+          if (!outObj[node.dataset.group]) {
+            outObj[node.dataset.group] = {};
+          }
+          outObj[node.dataset.group][node.dataset.id] = val;
+        }
+        else {
+          outObj[key] = val;
+        }
       }
 
       return;

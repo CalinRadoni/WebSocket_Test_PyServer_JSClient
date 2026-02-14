@@ -29,29 +29,35 @@
           <label for="deviceName">Device name</label><input type="text" id="deviceName" value="">
         </div>
         <div>
-          <label for="mDNS">mDNS name</label><input type="text" id="mDNS" value="">
+          <label for="mDNSName">mDNS name</label><input type="text" id="mDNSName" value="">
         </div>
       </fieldset>
       <details id="w0Settings">
         <summary>WiFi settings 1</summary>
-        <fieldset id="w0Fields"></fieldset>
+        <fieldset id="WiFiCfg0"></fieldset>
       </details>
       <details id="w1Settings">
         <summary>WiFi settings 2</summary>
-        <fieldset id="w1Fields"></fieldset>
+        <fieldset id="WiFiCfg1"></fieldset>
       </details>
       <details id="w2Settings">
         <summary>WiFi settings 3</summary>
-        <fieldset id="w2Fields"></fieldset>
+        <fieldset id="WiFiCfg2"></fieldset>
       </details>
       <fieldset>
         <legend>Time</legend>
         <div>
-          <label for="tz">Timezone</label><select id="tz"></select>
+          <label for="timeZone">Timezone</label><select id="timeZone"></select>
         </div>
         <input type="checkbox" id="chkNTP"><label for="chkNTP">Use NTP</label><br>
         <div id="divNTP">
           <label for="srvNTP">NTP Server</label><input type="text" id="srvNTP" placeholder="pool.ntp.org" value="">
+        </div>
+      </fieldset>
+      <fieldset>
+        <legend>Access Point Mode</legend>
+        <div>
+          <label for="apPassword">Password</label><input type="password" id="apPassword" value="">
         </div>
       </fieldset>
       <fieldset>

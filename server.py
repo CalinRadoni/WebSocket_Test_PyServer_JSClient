@@ -13,7 +13,7 @@ logging.getLogger().setLevel(logging.INFO)
 
 clients = set()
 
-testData = []
+testData = {}
 
 
 async def broadcast_time():
@@ -64,26 +64,34 @@ def getRandomTimeZone():
 
 def randomizeSettings():
     global testData
-    for elem in testData:
-        if elem["id"] == "tz":
-            elem["val"] = getRandomTimeZone()
+    testData["timeZone"] = getRandomTimeZone()
 
 
 def buildSettings():
     global testData
-    testData = [
-        {"id": "deviceName", "val": "ESP32"},
-        {"id": "mDNS", "val": ""},
-        {"id": "w0SSID", "val": "Home_SSID"},
-        {"id": "w0Pass", "val": "Password1!"},
-        {"id": "w0UseDHCP", "val": "true"},
-        {"id": "w0IP", "val": ""},
-        {"id": "w0Mask", "val": ""},
-        {"id": "w0GW", "val": ""},
-        {"id": "w0DNS", "val": ""},
-        {"id": "tz", "val": getRandomTimeZone()},
-        {"id": "srvNTP", "val": "pool.ntp.org"},
-    ]
+    testData = {
+        "deviceName": "ESP32",
+        "mDNSName": "",
+        "timeZone": getRandomTimeZone(),
+        "srvNTP": "pool.ntp.org",
+        "apPassword": "a_p_pass",
+        "WiFiCfg0": {
+            "SSID": "Main_SSID",
+            "Pass": "Password1!",
+            "UseDHCP": "false",
+            "IPv4": "192.168.1.21",
+            "Mask": "255.255.255.0",
+            "Gateway": "192.168.1.1",
+            "srvDNS1": "8.8.8.8",
+            "srvDNS2": "8.8.4.4"
+        },
+        "WiFiCfg1": {
+            "SSID": "",
+            "BSSID": "00:11:22:33:44:55",
+            "Pass": "Password2!",
+            "UseDHCP": "true"
+        }
+    }
 
 
 async def handle_ws_clients():

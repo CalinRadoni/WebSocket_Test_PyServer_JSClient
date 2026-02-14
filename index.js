@@ -58,6 +58,9 @@ function wsOnMessage(event) {
           if (elem != null)
             elem.innerHTML = val;
           break;
+        case 'status':
+          Build(val);
+          break;
         default:
           log.warn(`received ${key} key`);
           break;
@@ -94,4 +97,8 @@ function onClickBtnB(event) {
   else {
     logger('websocket is NOT connected !');
   }
+}
+
+function Build(jsonSettingsData) {
+  //INFO: build the page based on the received data
 }
