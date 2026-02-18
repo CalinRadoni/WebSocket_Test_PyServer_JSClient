@@ -6,7 +6,7 @@
  *   Grouping is usefull if displayed in a list, like `select` + `optgroup`s;
  * - {@link TimeZones.GetCurrentTimeZone} returns the timezone of user's browser.
  * 
- * @version 1.0.0
+ * @version 1.1.0
  * @copyright Calin Radoni 2026 {@link https://github.com/CalinRadoni}
  * @license MIT License
  */
@@ -75,15 +75,25 @@ class TimeZones {
    *    - `UTC` is excluded
    *    - `Etc/...` are excluded
    */
-  Load(geographicalOnly = true) {
+  Load(geographicalOnly = true, includeUTC = true) {
     const allTimeZones = Intl.supportedValuesOf('timeZone');
     const date = new Date();
 
     this.zones.length = 0; // clear the array
 
     allTimeZones.forEach(tz => {
-      if (!geographicalOnly ||
-        (tz.includes('/') && !tz.startsWith('Etc/'))) {
+      let addEntry = !geographicalOnly;
+      if (geographicalOnly) {
+        if (tz == 'UTC') {
+          addEntry = includeUTC;
+        }
+        else {
+          if (tz.includes('/') && !tz.startsWith('Etc/'))
+            addEntry = true;
+        }
+      }
+
+      if (addEntry) {
         const tzo = new TZO(tz);
 
         const dateTimeFormat = new Intl.DateTimeFormat("en-US", { timeZone: tz, timeZoneName: 'shortOffset' });

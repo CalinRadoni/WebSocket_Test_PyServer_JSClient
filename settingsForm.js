@@ -5,9 +5,13 @@ class SettingsForm {
     //
   }
 
+  browserTimeZone = null;
+
   #SetOptionState(node, tzName) {
     if (node.nodeName == 'OPTION') {
       node.selected = node.value == tzName;
+      if (node.selected)
+        this.tzSelected = true;
       return;
     }
 
@@ -19,7 +23,7 @@ class SettingsForm {
   #SetFieldValue(id, value, dGroup, dID) {
     const elem = document.getElementById(id);
     if (!elem) {
-      console.error(`Element with id ${id} not found !`);
+      console.error(`Element with id ${id} not found!`);
       return;
     }
 
@@ -43,7 +47,7 @@ class SettingsForm {
 
   #SetFieldsFromObject(name, object) {
     if (object.constructor != Object) {
-      console.error(`The value of ${name} should be an object !`);
+      console.error(`The value of ${name} should be an object!`);
       return;
     }
 
@@ -57,9 +61,11 @@ class SettingsForm {
   Build(jsonSettingsData) {
     const ds = document.getElementById('settings');
     if (!ds) {
-      console.error('settings form not found !');
+      console.error('Settings form not found!');
       return;
     }
+
+    this.tzSelected = false;
 
     if (jsonSettingsData.constructor != Object) {
       console.error("The input data should be an object");
@@ -72,6 +78,29 @@ class SettingsForm {
       }
       else {
         this.#SetFieldValue(key, val);
+      }
+    });
+
+    if (!this.tzSelected) {
+      this.#SetOptionState(ds, this.browserTimeZone ? this.browserTimeZone : "UTC");
+    }
+  }
+
+  SetPasswordToggleButtons() {
+    const buttons = document.querySelectorAll("[data-input");
+    buttons.forEach(button => {
+      button.onclick = () => {
+        const elem = document.getElementById(button.dataset.input);
+        if (elem) {
+          if (elem.type == "password") {
+            elem.type = "text";
+            button.classList.add("active");
+          }
+          else {
+            elem.type = "password";
+            button.classList.remove("active");
+          }
+        }
       }
     });
   }
@@ -112,7 +141,7 @@ class SettingsForm {
   Save(outObj) {
     const ds = document.getElementById('settings');
     if (!ds) {
-      console.error('settings form not found !');
+      console.error('Settings form not found!');
       return;
     }
     if (!ds.hasChildNodes()) {

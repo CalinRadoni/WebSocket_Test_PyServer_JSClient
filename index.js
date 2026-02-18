@@ -85,7 +85,7 @@ function onClickBtnA(event) {
     websocket.send(str);
   }
   else {
-    logger('websocket is NOT connected !');
+    logger('websocket is NOT connected!');
   }
 }
 
@@ -95,7 +95,7 @@ function onClickBtnB(event) {
     websocket.send(str);
   }
   else {
-    logger('websocket is NOT connected !');
+    logger('websocket is NOT connected!');
   }
 }
 

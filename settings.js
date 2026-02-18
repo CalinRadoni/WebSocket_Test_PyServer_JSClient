@@ -31,6 +31,8 @@ function onLoad(event) {
   initTZlist();
   initButtons();
 
+  sfb.SetPasswordToggleButtons();
+
   wsConnect();
 }
 
@@ -98,7 +100,7 @@ function onSettingFormSubmit() {
       websocket.send(JSON.stringify(obj));
     }
     else {
-      log.err('websocket NOT connected !');
+      log.err('websocket NOT connected!');
     }
   }
 }
@@ -109,7 +111,7 @@ function onSettingFormReset() {
     websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
   }
   else {
-    log.err('websocket NOT connected !');
+    log.err('websocket NOT connected!');
   }
 }
 
@@ -170,9 +172,11 @@ function initTZlist() {
   }
 
   const tzs = new TimeZones();
-  tzs.Load(true);
+  tzs.Load(true, true);
   tzs.Sort(TimeZoneSort.ROL);
   const utz = tzs.GetCurrentTimeZone();
+
+  sfb.browserTimeZone = utz;
 
   const groups = tzs.GroupTimeZones();
   Object.keys(groups).sort().forEach(region => {

@@ -57,6 +57,9 @@ function AddInputField(parent, divId, displayText, id, fieldType) {
   switch (fieldType) {
     case inputFieldType.password:
       elem.setAttribute("type", "password");
+      elem.setAttribute("spellcheck", "false");
+      elem.setAttribute("autocomplete", "current-password");
+      elem.setAttribute("autocapitalize", "none");
       break;
     case inputFieldType.ip:
     elem.setAttribute("pattern", IP_pattern);
@@ -69,6 +72,16 @@ function AddInputField(parent, divId, displayText, id, fieldType) {
   }
 
   div.appendChild(elem);
+
+  if (fieldType == inputFieldType.password) {
+    elem = document.createElement("button");
+    elem.setAttribute("type", "button");
+    elem.classList.add("showPass");
+    elem.dataset.input = id;
+    text = document.createTextNode("\u00A0");
+    elem.appendChild(text);
+    div.appendChild(elem);
+  }
 
   parent.appendChild(div);
 }
@@ -106,7 +119,7 @@ function AddWiFiFields(index) {
 
   const fs = document.getElementById(bName);
   if (!fs) {
-    console.error(`Fieldset ${bName} not found !`);
+    console.error(`Fieldset ${bName} not found!`);
     return;
   }
 

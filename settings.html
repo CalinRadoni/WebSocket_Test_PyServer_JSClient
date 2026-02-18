@@ -9,6 +9,9 @@
   <link rel="stylesheet" href="cream-all-mn.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <script type="module" src="./settings.js"></script>
+  <style>
+    button.showPass { margin-left: 2px; }
+  </style>
 </head>
 
 <body>
@@ -57,7 +60,10 @@
       <fieldset>
         <legend>Access Point Mode</legend>
         <div>
-          <label for="apPassword">Password</label><input type="password" id="apPassword" value="">
+          <label for="apPassword">Password</label>
+          <input type="password" id="apPassword" value=""
+            spellcheck="false" autocomplete="current-password" autocapitalize="none">
+          <button type="button" class="showPass" data-input="apPassword">&nbsp;</button>
         </div>
       </fieldset>
       <fieldset>

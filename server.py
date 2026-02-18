@@ -64,6 +64,7 @@ def getRandomTimeZone():
 
 def randomizeSettings():
     global testData
+    # testData["timeZone"] = ""
     testData["timeZone"] = getRandomTimeZone()
 
 
