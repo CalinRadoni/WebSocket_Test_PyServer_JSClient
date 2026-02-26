@@ -6,12 +6,16 @@
   <title>ESP32 Demo site - Settings</title>
   <meta name="description" content="ESP32 Demo site Settings">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <link rel="stylesheet" href="cream-all-mn.css">
+  <!-- <link rel="stylesheet" href="cream-all-mn.css"> -->
+  <link rel="stylesheet" href="modern-normalize.css">
+  <link rel="stylesheet" href="cream.css">
+  <link rel="stylesheet" href="cream-extra.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
   <script type="module" src="./settings.js"></script>
   <style>
     button.showPass { margin-left: 2px; }
   </style>
+
 </head>
 
 <body>
@@ -25,84 +29,21 @@
     </nav>
   </header>
   <main>
-    <form id="settings">
-      <fieldset>
-        <legend></legend>
-        <div>
-          <label for="deviceName">Device name</label><input type="text" id="deviceName" value="">
-        </div>
-        <div>
-          <label for="mDNSName">mDNS name</label><input type="text" id="mDNSName" value="">
-        </div>
-      </fieldset>
-      <details id="w0Settings">
-        <summary>WiFi settings 1</summary>
-        <fieldset id="WiFiCfg0"></fieldset>
-      </details>
-      <details id="w1Settings">
-        <summary>WiFi settings 2</summary>
-        <fieldset id="WiFiCfg1"></fieldset>
-      </details>
-      <details id="w2Settings">
-        <summary>WiFi settings 3</summary>
-        <fieldset id="WiFiCfg2"></fieldset>
-      </details>
-      <fieldset>
-        <legend>Time</legend>
-        <div>
-          <label for="timeZone">Timezone</label><select id="timeZone"></select>
-        </div>
-        <input type="checkbox" id="chkNTP"><label for="chkNTP">Use NTP</label><br>
-        <div id="divNTP">
-          <label for="srvNTP">NTP Server</label><input type="text" id="srvNTP" placeholder="pool.ntp.org" value="">
-        </div>
-      </fieldset>
-      <fieldset>
-        <legend>Access Point Mode</legend>
-        <div>
-          <label for="apPassword">Password</label>
-          <input type="password" id="apPassword" value=""
-            spellcheck="false" autocomplete="current-password" autocapitalize="none">
-          <button type="button" class="showPass" data-input="apPassword">&nbsp;</button>
-        </div>
-      </fieldset>
-      <fieldset>
-        <legend>Telegram</legend>
-        <input type="checkbox" id="chkTelegram"><label for="chkTelegram">Use Telegram</label><br>
-        <div id="tlgD0">
-          <label for="telegramChatID">Chat ID</label><input type="text" id="telegramChatID" value="">
-        </div>
-        <div id="tlgD1">
-          <label for="telegramBotName">Bot name</label><input type="text" id="telegramBotName" value="">
-        </div>
-        <div id="tlgD2">
-          <label for="telegramBotToken">Bot token</label><input type="text" id="telegramBotToken" value="">
-        </div>
-      </fieldset>
-      <fieldset>
-        <button type="button" id="btnSave">Save</button>
-        <button type="button" id="btnReset">Reset</button>
-      </fieldset>
-      <fieldset>
-        <legend>Test fields</legend>
-        <div>
-          <label for="email0">e-mail</label>
-          <input type="email" id="email0" value="">
-        </div>
-        <div>
-          <label for="dateS">date</label><input type="date" id="dateS" value="">
-        </div>
-        <div>
-          <label for="timeS">time</label><input type="time" id="timeS" value="">
-        </div>
-        <input type="checkbox" id="chk0"><label for="chk0">A checkbox</label><br>
-        <input type="checkbox" id="chk1"><label for="chk1">Another checkbox</label><br>
-        <label for="">Choose an option:</label>
-        <input type="radio" name="radioBB" id="ro0"><label for="ro0">First option</label><br>
-        <input type="radio" name="radioBB" id="ro1"><label for="ro1">Second option</label><br>
-        <input type="radio" name="radioBB" id="ro2"><label for="ro2">Third option</label><br>
-      </fieldset>
-    </form>
+    <svg style="display: none">
+      <defs>
+        <symbol id="svg-arrow-right" viewbox="0 0 100 100"
+          style="fill:var(--c-svgf,#888);stroke:var(--c-svgs,#000)">
+          <path class="svg-legend" d="M10 10l80 40l-80 40z" />
+        </symbol>
+        <symbol id="svg-eye" viewbox = "0 0 160 160"
+          style="fill:none; stroke:var(--c-svgs,#888)">
+          <path style="fill:var(--c-svgf,#000);" d="m 12,80 c 0,0 41,-44 68,-44 27,0 68,44 68,44 0,0 -41,44 -68,44 C 53,124 12,80 12,80 Z" />
+          <circle style="fill:var(--c-svgfm,#000)" cx="80" cy="80" r="20" />
+          <path style="stroke:var(--c-svgso,#888)" d="M 24,24 136,136" />
+        </symbol>
+      </defs>
+    </svg>
+    <form id="settings"></form>
   </main>
   <footer>
     <cream-row>
