@@ -8,26 +8,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <link rel="stylesheet" href="cream-mn.min.css">
   <link rel="icon" href="favicon.ico" type="image/x-icon">
-  <script type="module" src="./index.js"></script>
+  <script type="module" src="./about.js"></script>
 </head>
 
 <body>
   <header>
     <h1 class="c-main">ESP32 Demo site</h1>
-    <h2>home page</h2>
-    <nav id="topmenu"></nav>
+    <h2>This page is built from the JSON description string received from server</h2>
+    <nav id="topmenu">
+    </nav>
   </header>
   <main>
-    <section>
-      <button type="button" data-cmd="WiFi Scan">WiFi Scan</button>
-    </section>
-    <section>
-      <button type="button" data-cmd="I2C Scan">I2C Scan</button>
-    </section>
-    <section>
-      <button type="button" data-cmd="Erase namespace">Reset to default</button>
-      <p><b>Warning:</b> you will loose all the settings, including the WiFi credentials!</p>
-    </section>
+    <form id="info"></form>
   </main>
   <footer>
     <cream-row>

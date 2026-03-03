@@ -1,10 +1,12 @@
 "use strict";
 
 import { GetWebsocketURL, BuildTopMenu } from "./common.js";
+import { SettingsForm } from "./settingsForm.js";
 import { Logger } from "./logger.js";
 
 var websocket;
 
+const sfb = new SettingsForm();
 const log = new Logger('log', 2500, 2500);
 
 function setLogColors() {
@@ -19,7 +21,6 @@ window.addEventListener('load', onLoad);
 function onLoad(event) {
   setLogColors();
   BuildTopMenu();
-  setCmdButtons();
   wsConnect();
 }
 
@@ -34,8 +35,8 @@ function wsConnect() {
 function wsOnOpen(event) {
   log.log('ws connection opened');
 
-  log.log('requesting main page');
-  websocket.send(JSON.stringify({ 'cmd': 'getHome' }));
+  log.log('requesting data');
+  websocket.send(JSON.stringify({ 'cmd': 'getAbout' }));
 }
 
 function wsOnClose(event) {
@@ -62,8 +63,8 @@ function wsOnMessage(event) {
         if (elem != null)
           elem.innerHTML = val;
         break;
-      case 'home':
-        Build(val);
+      case 'about':
+        sfb.BuildTheForm("info", val);
         break;
       case 'status':
         // handle command/request status response
@@ -71,23 +72,6 @@ function wsOnMessage(event) {
       default:
         log.warn(`received ${key} key`);
         break;
-    }
-  });
-}
-
-function Build(jsonSettingsData) {
-  //INFO: build the page based on the received data
-}
-
-function setCmdButtons() {
-  const buttons = document.querySelectorAll("[data-cmd]");
-  buttons.forEach(button => {
-    button.onclick = () => {
-      if (websocket.readyState != websocket.OPEN) {
-        log.err('websocket NOT connected!');
-        return;
-      }
-      websocket.send(JSON.stringify({ 'cmd': button.dataset.cmd }));
     }
   });
 }

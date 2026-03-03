@@ -1,4 +1,6 @@
-import { getWebsocketURL } from "./common.js";
+"use strict";
+
+import { GetWebsocketURL, BuildTopMenu } from "./common.js";
 import { SettingsForm } from "./settingsForm.js";
 import { TimeZoneSort, TimeZones } from "./timeZones.js";
 import { Logger } from "./logger.js";
@@ -7,141 +9,148 @@ var websocket;
 
 /**
  * Note: for *booleans* (`collapsible`, `open`, ...) use 0 and >0
- * Do NOT use true, false and surelly not "false"
+ * Do NOT use true, false and definitely not "false"
  * Search "Javascript boolean coercion" for information
  */
 const JSONformDescription = 
 `[
-    {
-        "type": "fieldset",
-        "fields": [
-            { "type": "text", "id": "deviceName", "text": "Device name" },
-            { "type": "text", "id": "mDNSName", "text": "mDNS name" }
-        ]
+    { "type": "fieldset",
+      "fields": [
+        { "type": "text", "id": "deviceName", "text": "Device name" },
+        { "type": "text", "id": "mDNSName", "text": "mDNS name" }
+      ]
     },
     { "type": "legend", "text": "WiFi settings 1", "collapsible": 1, "controls": "wg0", "open": 1 },
-    {
-        "type": "fieldset",
-        "show": "wg0",
-        "gid": "WiFiCfg0",
-        "fields": [
-            { "type": "text", "id": "SSID", "text": "SSID" },
-            { "type": "password", "id": "Pass", "text": "Password" },
-            { "type": "bssid", "id": "BSSID", "text": "BSSID" },
-            { "type": "checkbox", "id": "UseDHCP", "text": "Use DHCP",
-                "info": "Most of the time the addresses are set using DHCP",
-                "controls": "ws0", "discheck": true },
-            { "type": "ip", "disable": "ws0", "id": "IPv4", "text": "IPv4" },
-            { "type": "ip", "disable": "ws0", "id": "Mask", "text": "Mask" },
-            { "type": "ip", "disable": "ws0", "id": "Gateway", "text": "Gateway" },
-            { "type": "ip", "disable": "ws0", "id": "srvDNS1", "text": "DNS 1" },
-            { "type": "ip", "disable": "ws0", "id": "srvDNS2", "text": "DNS 2" }
-        ]
+    { "type": "fieldset",
+      "show": "wg0",
+      "gid": "WiFiCfg0",
+      "fields": [
+        { "type": "text", "id": "SSID", "text": "SSID" },
+        { "type": "password", "id": "Pass", "text": "Password" },
+        { "type": "bssid", "id": "BSSID", "text": "BSSID" },
+        { "type": "checkbox", "id": "UseDHCP", "text": "Use DHCP",
+          "info": "Most of the time the addresses are set using DHCP",
+          "controls": "ws0", "discheck": true },
+        { "type": "ip", "disable": "ws0", "id": "IPv4", "text": "IPv4" },
+        { "type": "ip", "disable": "ws0", "id": "Mask", "text": "Mask" },
+        { "type": "ip", "disable": "ws0", "id": "Gateway", "text": "Gateway" },
+        { "type": "ip", "disable": "ws0", "id": "srvDNS1", "text": "DNS 1" },
+        { "type": "ip", "disable": "ws0", "id": "srvDNS2", "text": "DNS 2" }
+      ]
     },
     { "type": "legend", "text": "WiFi settings 2", "collapsible": 1, "controls": "wg1" },
-    {
-        "type": "fieldset",
-        "show": "wg1",
-        "gid": "WiFiCfg1",
-        "fields": [
-            { "type": "text", "id": "SSID", "text": "SSID" },
-            { "type": "password", "id": "Pass", "text": "Password" },
-            { "type": "bssid", "id": "BSSID", "text": "BSSID" },
-            { "type": "checkbox", "id": "UseDHCP", "text": "Use DHCP",
-                "info": "Most of the time the addresses are set using DHCP",
-                "controls": "ws1", "discheck": true },
-            { "type": "ip", "disable": "ws1", "id": "IPv4", "text": "IPv4" },
-            { "type": "ip", "disable": "ws1", "id": "Mask", "text": "Mask" },
-            { "type": "ip", "disable": "ws1", "id": "Gateway", "text": "Gateway" },
-            { "type": "ip", "disable": "ws1", "id": "srvDNS1", "text": "DNS 1" },
-            { "type": "ip", "disable": "ws1", "id": "srvDNS2", "text": "DNS 2" }
-        ]
+    { "type": "fieldset",
+      "show": "wg1",
+      "gid": "WiFiCfg1",
+      "fields": [
+        { "type": "text", "id": "SSID", "text": "SSID" },
+        { "type": "password", "id": "Pass", "text": "Password" },
+        { "type": "bssid", "id": "BSSID", "text": "BSSID" },
+        { "type": "checkbox", "id": "UseDHCP", "text": "Use DHCP",
+          "info": "Most of the time the addresses are set using DHCP",
+          "controls": "ws1", "discheck": true },
+        { "type": "ip", "disable": "ws1", "id": "IPv4", "text": "IPv4" },
+        { "type": "ip", "disable": "ws1", "id": "Mask", "text": "Mask" },
+        { "type": "ip", "disable": "ws1", "id": "Gateway", "text": "Gateway" },
+        { "type": "ip", "disable": "ws1", "id": "srvDNS1", "text": "DNS 1" },
+        { "type": "ip", "disable": "ws1", "id": "srvDNS2", "text": "DNS 2" }
+      ]
     },
     { "type": "legend", "text": "WiFi settings 3", "collapsible": 1, "controls": "wg2" },
-    {
-        "type": "fieldset",
-        "show": "wg2",
-        "gid": "WiFiCfg2",
-        "fields": [
-            { "type": "text", "id": "SSID", "text": "SSID" },
-            { "type": "password", "id": "Pass", "text": "Password" },
-            { "type": "bssid", "id": "BSSID", "text": "BSSID" },
-            { "type": "checkbox", "id": "UseDHCP", "text": "Use DHCP",
-                "info": "Most of the time the addresses are set using DHCP",
-                "controls": "ws2", "discheck": true },
-            { "type": "ip", "disable": "ws2", "id": "IPv4", "text": "IPv4" },
-            { "type": "ip", "disable": "ws2", "id": "Mask", "text": "Mask" },
-            { "type": "ip", "disable": "ws2", "id": "Gateway", "text": "Gateway" },
-            { "type": "ip", "disable": "ws2", "id": "srvDNS1", "text": "DNS 1" },
-            { "type": "ip", "disable": "ws2", "id": "srvDNS2", "text": "DNS 2" }
-        ]
-    },
-    { "type": "legend", "text": "Time settings" },
-    {
-        "type": "fieldset",
-        "fields": [
-            { "type": "select", "id": "timeZone", "text": "Timezone" },
-            { "type": "checkbox", "id": "chkNTP", "text": "Use NTP",
-                "controls": "wsNTP" },
-            { "type": "text", "disable": "wsNTP", "id": "srvNTP", "text": "NTP Server", "placeholder": "pool.ntp.org" }
-        ]
+    { "type": "fieldset",
+      "show": "wg2",
+      "gid": "WiFiCfg2",
+      "fields": [
+        { "type": "text", "id": "SSID", "text": "SSID" },
+        { "type": "password", "id": "Pass", "text": "Password" },
+        { "type": "bssid", "id": "BSSID", "text": "BSSID" },
+        { "type": "checkbox", "id": "UseDHCP", "text": "Use DHCP",
+          "info": "Most of the time the addresses are set using DHCP",
+          "controls": "ws2", "discheck": true },
+        { "type": "ip", "disable": "ws2", "id": "IPv4", "text": "IPv4" },
+        { "type": "ip", "disable": "ws2", "id": "Mask", "text": "Mask" },
+        { "type": "ip", "disable": "ws2", "id": "Gateway", "text": "Gateway" },
+        { "type": "ip", "disable": "ws2", "id": "srvDNS1", "text": "DNS 1" },
+        { "type": "ip", "disable": "ws2", "id": "srvDNS2", "text": "DNS 2" }
+      ]
     },
     { "type": "legend", "text": "Access Point Mode" },
-    {
-        "type": "fieldset",
-        "fields": [
-            { "type": "password", "id": "apPassword", "text": "Password" }
-        ]
+    { "type": "fieldset",
+      "fields": [
+        { "type": "password", "id": "apPassword", "text": "Password" },
+        { "type": "radiogroup", "name": "radioBB", "text": "Enable Access Point:",
+          "options": [
+            { "id": "apen0", "text": "If failed to connect" },
+            { "id": "apen1", "text": "Allways" },
+            { "id": "apen2", "text": "Never" }
+          ]
+        }
+      ]
+    },
+    { "type": "legend", "text": "Time settings" },
+    { "type": "fieldset",
+      "fields": [
+        { "type": "select", "id": "timeZone", "text": "Timezone" },
+        { "type": "checkbox", "id": "chkNTP", "text": "Use NTP",
+          "controls": "wsNTP" },
+        { "type": "text", "disable": "wsNTP", "id": "srvNTP", "text": "NTP Server", "placeholder": "pool.ntp.org" }
+      ]
     },
     { "type": "legend", "text": "Telegram" },
-    {
-        "type": "fieldset",
-        "fields": [
-            { "type": "checkbox", "id": "chkTelegram", "text": "Use Telegram",
-                "controls": "wsTelegram" },
-            { "type": "text", "show": "wsTelegram", "id": "telegramChatID", "text": "Chat ID" },
-            { "type": "text", "show": "wsTelegram", "id": "telegramBotName", "text": "Bot name" },
-            { "type": "text", "show": "wsTelegram", "id": "telegramBotToken", "text": "Bod token" }
-        ]
+    { "type": "fieldset",
+      "fields": [
+        { "type": "checkbox", "id": "chkTelegram", "text": "Use Telegram",
+          "controls": "wsTelegram" },
+        { "type": "text", "show": "wsTelegram", "id": "telegramChatID", "text": "Chat ID" },
+        { "type": "text", "show": "wsTelegram", "id": "telegramBotName", "text": "Bot name" },
+        { "type": "text", "show": "wsTelegram", "id": "telegramBotToken", "text": "Bod token" }
+      ]
     },
-    {
-        "type": "fieldset",
-        "fields": [
-            { "type": "buttons", "buttons": [
-                { "type": "button", "id": "btnSave", "text": "Save"},
-                { "type": "button", "id": "btnReset", "text": "Reset"}
-            ] }
-        ]
+    { "type": "fieldset",
+      "fields": [
+        { "type": "buttons", "buttons": [
+          { "type": "button", "id": "btnSave", "text": "Save"},
+          { "type": "button", "id": "btnReset", "text": "Reset"}
+        ] }
+      ]
     },
     { "type": "legend", "text": "Test fields" },
-    {
-        "type": "fieldset",
-        "fields": [
-            { "type": "email", "id": "email0", "text": "e-mail" },
-            { "type": "date", "id": "dateS", "text": "date" },
-            { "type": "time", "id": "timeS", "text": "time" },
-            { "type": "radiogroup", "name": "radioBB", "text": "Choose an option:",
-                "options": [
-                    { "id": "ro0", "text": "First option" },
-                    { "id": "ro1", "text": "Second option" },
-                    { "id": "ro2", "text": "Third option" }
-                ]
-            }
-        ]
+    { "type": "fieldset",
+      "fields": [
+        { "type": "email", "id": "email0", "text": "e-mail" },
+        { "type": "date", "id": "dateS", "text": "date" },
+        { "type": "time", "id": "timeS", "text": "time" },
+        { "type": "radiogroup", "name": "radioBB", "text": "This is a long label, Choose an option:",
+          "options": [
+            { "id": "ro0", "text": "First option" },
+            { "id": "ro1", "text": "Second option" },
+            { "id": "ro2", "text": "Third option" }
+          ]
+        }
+      ]
+    },
+    { "type": "legend", "text": "Info" },
+    { "type": "fieldset",
+      "fields": [
+        { "type": "infotitle", "text": "info title 0" },
+        { "type": "info", "label": "a label", "text": "Some text" },
+        { "type": "info", "label": "another label", "text": "and much much more more more text text t ext te xt tex t text" },
+        { "type": "info", "label": "and one more", "text": "space filling text" },
+        { "type": "infotitle", "text": "info title 1" },
+        { "type": "info", "label": "a label", "text": "Some text" },
+        { "type": "info", "label": "another label", "text": "and much much more more more text text t ext te xt tex t text" },
+        { "type": "info", "label": "and one more", "text": "space filling text" }
+      ]
     }
 ]`;
 
 const sfb = new SettingsForm();
 const log = new Logger('log', 2500, 2500);
 
-const wifiCfgCnt = 3;
-
-const ckhList = [];
-
 function setLogColors() {
-  let styles = getComputedStyle(document.querySelector(':root'));
-  let ct = styles.getPropertyValue('--c-txt');
-  let ce = styles.getPropertyValue('--c-err');
+  const styles = getComputedStyle(document.querySelector(':root'));
+  const ct = styles.getPropertyValue('--c-txt');
+  const ce = styles.getPropertyValue('--c-err');
   log.setColors(ct, ct, ce);
 }
 
@@ -149,6 +158,8 @@ window.addEventListener('load', onLoad);
 
 function onLoad(event) {
   setLogColors();
+
+  BuildTopMenu();
 
   const jsonData = JSON.parse(JSONformDescription);
   sfb.BuildTheForm("settings", jsonData);
@@ -160,7 +171,7 @@ function onLoad(event) {
 }
 
 function wsConnect() {
-  const gwURL = getWebsocketURL();
+  const gwURL = GetWebsocketURL();
   websocket = new WebSocket(gwURL);
   websocket.onopen = wsOnOpen;
   websocket.onclose = wsOnClose;
@@ -180,46 +191,49 @@ function wsOnClose(event) {
 }
 
 function wsOnMessage(event) {
-  let jsonData = null;
+  let jsonData;
   try {
     jsonData = JSON.parse(event.data);
   }
-  catch (error) {
+  catch (err) {
     log.err(`Failed to parse message as JSON: ${event.data}`);
+    console.error(err);
+    return;
   }
 
-  if (jsonData !== null) {
-    Object.keys(jsonData).forEach(key => {
-      const val = jsonData[key];
-      switch (key) {
-        case 'time':
-          const elem = document.getElementById('currentTime');
-          if (elem != null)
-            elem.innerHTML = val;
-          break;
-        case 'settings':
-          log.log('settings received');
-          sfb.SetValues(val);
-          break;
-        default:
-          log.warn(`received ${key} key`);
-          break;
-      }
-    })
-  }
+  Object.keys(jsonData).forEach(key => {
+    const val = jsonData[key];
+    switch (key) {
+      case 'time':
+        const elem = document.getElementById('currentTime');
+        if (elem != null)
+          elem.innerHTML = val;
+        break;
+      case 'settings':
+        log.log('settings received');
+        sfb.SetValues(val);
+        break;
+      case 'status':
+        // handle command/request status response
+        break;
+      default:
+        log.warn(`received ${key} key`);
+        break;
+    }
+  });
 }
 
 function onSettingFormSubmit() {
-  let dataObj = {};
+  const dataObj = {};
   sfb.Save(dataObj);
   if (Object.keys(dataObj).length > 0) {
-    let obj = {};
+    const obj = {};
     obj['cmd'] = 'setSettings';
     obj['data'] = dataObj;
 
     if (websocket.readyState == websocket.OPEN) {
-      log.log('new settings sent');
       websocket.send(JSON.stringify(obj));
+      log.log('settings sent');
     }
     else {
       log.err('websocket NOT connected!');
@@ -228,13 +242,13 @@ function onSettingFormSubmit() {
 }
 
 function onSettingFormReset() {
-  if (websocket.readyState == websocket.OPEN) {
-    log.log('requesting settings');
-    websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
-  }
-  else {
+  if (websocket.readyState != websocket.OPEN) {
     log.err('websocket NOT connected!');
+    return;
   }
+
+  log.log('requesting settings');
+  websocket.send(JSON.stringify({ 'cmd': 'getSettings' }));
 }
 
 function initTZlist() {

@@ -13,6 +13,8 @@ logging.getLogger().setLevel(logging.INFO)
 
 clients = set()
 
+aboutDefinition = set()
+
 testData = {}
 
 
@@ -51,6 +53,11 @@ async def handle_clients(serverConn):
                             logging.info(f"{key}: {value}")
                     else:
                         logging.info("no data ?")
+                if data["cmd"] == "getAbout":
+                    sss = dict()
+                    sss["about"] = aboutDefinition
+                    await serverConn.send(json.dumps(sss))
+                    
 
     finally:
         clients.remove(serverConn)
@@ -67,6 +74,23 @@ def randomizeSettings():
     # testData["timeZone"] = ""
     testData["timeZone"] = getRandomTimeZone()
 
+
+def buildAbout():
+    global aboutDefinition
+    aboutDefinition = [
+        { "type": "fieldset",
+            "fields": [
+                { "type": "infotitle", "text": "info title 0" },
+                { "type": "info", "label": "a label", "text": "Some text" },
+                { "type": "info", "label": "another label", "text": "and much much more more more text text t ext te xt tex t text" },
+                { "type": "info", "label": "and one more", "raw": "<a href=\"#abc\">aaa</a>" },
+                { "type": "infotitle", "text": "info title 1" },
+                { "type": "info", "label": "a label", "text": "Some text" },
+                { "type": "info", "label": "another label", "text": "and much much more more more text text t ext te xt tex t text" },
+                { "type": "info", "label": "and one more", "url": "https://www.google.com", "text": "Google" }
+            ]
+        }
+    ]
 
 def buildSettings():
     global testData
@@ -101,6 +125,7 @@ async def handle_ws_clients():
 
 
 async def main():
+    buildAbout()
     buildSettings()
 
     await asyncio.gather(broadcast_time(), handle_ws_clients())

@@ -7,10 +7,126 @@
  * 
  * An element will get a 'data-id' and 'data-group' attributes if is part of a "data/object group"
  * 
- * @version 4.2.0
+ * @version 4.5.2
  * @copyright Calin Radoni 2026 {@link https://github.com/CalinRadoni}
  * @license MIT License
  */
+
+/*
+Pseudo C + ASN.1 description 
+
+Description ::= Field[]
+
+FieldTypes ::= CHOICE {
+  fieldset
+  legend
+  text, password, bssid, ip, email, date, time
+  checkbox
+  button
+  buttons
+  radio
+  radiogroup
+  select
+  info
+  infotitle
+}
+
+fieldset {
+  S id (optional)
+  S gid
+  S show (optional)
+  Field fields[]
+}
+
+legend {
+  S show (optional)
+  N collapsible (optional) > 0 :
+    S controls (optional)
+    N open (optional)
+  S text
+}
+
+text, password, bssid, ip, email, date, time {
+  S id
+  S gid (optional, function param)
+  S show (optional)
+  S disable (optional)
+  S text
+  S type
+}
+
+checkbox {
+  S id
+  S gid (optional, function param)
+  S show (optional)
+  S controls (optional)
+  S disable (optional)
+  S discheck (optional)
+  S text
+}
+
+button {
+  S type
+  S id (optional)
+  S controls (optional)
+  S disable (optional)
+  S discheck (optional)
+}
+
+buttons {
+  S gid (optional, function param, only to be sent to descendants)
+  S show (optional)
+  Field buttons[]
+}
+
+radiogroup {
+  S id (optional)
+  S gid (optional, function param, only to be sent to descendants)
+  S show (optional)
+  S name
+  S text
+  radio options[]
+}
+
+radio {
+  S id
+  S gid (optional, function param)
+  type <- should be "radio", radiogroup sets this field
+  name <- radiogroup sets this field
+  S controls (optional)
+  S disable (optional)
+  S discheck (optional)
+  S text
+}
+
+select {
+  S id
+  S gid (optional, function param)
+  S show (optional)
+  S text
+  S disable (optional)
+}
+
+info {
+  S label
+  S show (optional)
+
+  CHOICE {
+    S url
+      S text
+    S text
+    S raw
+    <default> <- will make a div
+  }
+}
+
+infotitle {
+  S show (optional)
+  S text
+}
+*/
+
+"use strict";
 
 export { SettingsForm };
 
@@ -116,7 +232,7 @@ class SettingsForm {
     label.setAttribute("for", elemID);
     if (entryObject.show)
       label.dataset.show = entryObject.show;
-    let text = document.createTextNode(entryObject.text);
+    const text = document.createTextNode(entryObject.text);
     label.appendChild(text);
     parent.appendChild(label);
 
@@ -209,10 +325,8 @@ class SettingsForm {
     parent.appendChild(div);
   }
 
-  #AddButton(parent, entryObject, gid)
+  #AddButton(parent, entryObject)
   {
-    if (!gid) gid = "";
-
     const button = document.createElement("button");
     button.setAttribute("type", entryObject.type);
     if (entryObject.id)
@@ -253,12 +367,11 @@ class SettingsForm {
   {
     if (!gid) gid = "";
 
-    const elemID = gid + entryObject.id;
     const radioName = entryObject.name;
 
     const label = document.createElement("label");
     if (entryObject.id)
-      label.setAttribute("for", elemID);
+      label.setAttribute("for", gid + entryObject.id);
     if (entryObject.show)
       label.dataset.show = entryObject.show;
     const text = document.createTextNode(entryObject.text);
@@ -267,7 +380,7 @@ class SettingsForm {
 
     const div = document.createElement("div");
     if (entryObject.id)
-      div.setAttribute("id", elemID);
+      div.setAttribute("id", gid + entryObject.id);
     if (entryObject.show)
       div.dataset.show = entryObject.show;
 
@@ -324,7 +437,7 @@ class SettingsForm {
     label.setAttribute("for", elemID);
     if (entryObject.show)
       label.dataset.show = entryObject.show;
-    let text = document.createTextNode(entryObject.text);
+    const text = document.createTextNode(entryObject.text);
     label.appendChild(text);
     parent.appendChild(label);
 
@@ -339,6 +452,59 @@ class SettingsForm {
       elem.dataset.group = gid;
 
     parent.appendChild(elem);
+  }
+
+  #AddInfo(parent, entryObject)
+  {
+    const label = document.createElement("label");
+    label.classList.add("info");
+    if (entryObject.show)
+      label.dataset.show = entryObject.show;
+    const text = document.createTextNode(entryObject.label);
+    label.appendChild(text);
+    parent.appendChild(label);
+
+    if (Object.hasOwn(entryObject, "url")) {
+      const link = document.createElement("a");
+      link.setAttribute("href", entryObject.url);
+      if (entryObject.show)
+        link.dataset.show = entryObject.show;
+      const linktext = document.createTextNode(entryObject.text);
+      link.appendChild(linktext);
+      parent.appendChild(link);
+      return;
+    }
+
+    if (Object.hasOwn(entryObject, "text")) {
+      const info = document.createTextNode(entryObject.text);
+      if (entryObject.show)
+        info.dataset.show = entryObject.show;
+      parent.appendChild(info);
+      return;
+    }
+
+    const div = document.createElement("div");
+    if (entryObject.show)
+      div.dataset.show = entryObject.show;
+
+    if (Object.hasOwn(entryObject, "raw")) {
+      div.innerHTML=entryObject.raw;
+    }
+
+    parent.appendChild(div);
+  }
+
+  #AddInfoTitle(parent, entryObject)
+  {   
+    const label = document.createElement("label");
+    label.classList.add("gcs2");
+    label.classList.add("title");
+    if (entryObject.show)
+      label.dataset.show = entryObject.show;
+
+    const text = document.createTextNode(entryObject.text);
+    label.appendChild(text);
+    parent.appendChild(label);
   }
 
   #AddEntry(parent, entry, gid)
@@ -369,7 +535,7 @@ class SettingsForm {
           this.#AddCheckbox(parent, entry, gid);
           break;
         case "button":
-          this.#AddButton(parent, entry, gid);
+          this.#AddButton(parent, entry);
           break;
         case "buttons":
           this.#AddButtons(parent, entry, gid);
@@ -382,6 +548,12 @@ class SettingsForm {
           break;
         case "select":
           this.#AddSelect(parent, entry, gid);
+          break;
+        case "info":
+          this.#AddInfo(parent, entry);
+          break;
+        case "infotitle":
+          this.#AddInfoTitle(parent, entry);
           break;
         default:
           console.error(`Unknown entry type: ${entryType} !`);
@@ -396,7 +568,7 @@ class SettingsForm {
     const passwordButtons = document.querySelectorAll("[data-eye]");
     passwordButtons.forEach(button => {
       button.onclick = () => {
-        let passField = document.getElementById(button.dataset.eye);
+        const passField = document.getElementById(button.dataset.eye);
         if (passField) {
           if (passField.type == "password") {
             passField.type = "text";
@@ -414,11 +586,11 @@ class SettingsForm {
     buttons.forEach(button => {
       if (button.type == 'checkbox' || button.type == 'radio') {
         button.onchange = () => {
-          let disableOnCheck = button.dataset.discheck;
-          let disableValue = disableOnCheck ? button.checked : !button.checked;
+          const disableOnCheck = button.dataset.discheck;
+          const disableValue = disableOnCheck ? button.checked : !button.checked;
 
-          let elems = document.querySelectorAll(`[data-show="${button.dataset.controls}"]`);
-          elems.forEach(elem => {
+          const elemsV = document.querySelectorAll(`[data-show="${button.dataset.controls}"]`);
+          elemsV.forEach(elem => {
             if (disableValue) {
               if(!elem.classList.contains("hide")) {
                 elem.classList.add("hide");
@@ -431,8 +603,8 @@ class SettingsForm {
             }
           });
 
-          elems = document.querySelectorAll(`[data-disable="${button.dataset.controls}"]`);
-          elems.forEach(elem => {
+          const elemsD = document.querySelectorAll(`[data-disable="${button.dataset.controls}"]`);
+          elemsD.forEach(elem => {
             elem.disabled = disableValue;
           });
         }
@@ -443,7 +615,7 @@ class SettingsForm {
           button.dataset.open = button.dataset.open > 0 ? 0 : 1;
           this.#ChangeArrowButton(button);
 
-          let elems = document.querySelectorAll(`[data-show="${button.dataset.controls}"]`);
+          const elems = document.querySelectorAll(`[data-show="${button.dataset.controls}"]`);
           elems.forEach(elem => {
             if (button.dataset.open > 0) {
               elem.classList.remove("hide");
@@ -594,7 +766,7 @@ class SettingsForm {
       if (button.type == 'button') {
         button.dataset.open = button.dataset.open > 0 ? 1 : 0;
         this.#ChangeArrowButton(button);
-        let elems = document.querySelectorAll(`[data-show="${button.dataset.controls}"]`);
+        const elems = document.querySelectorAll(`[data-show="${button.dataset.controls}"]`);
         elems.forEach(elem => {
           if (button.dataset.open > 0) {
             elem.classList.remove("hide");
@@ -624,13 +796,8 @@ class SettingsForm {
     if (node.nodeName == 'INPUT' || node.nodeName == 'SELECT') {
       const key = node.id;
       if (key.length > 0) {
-        let val;
-        if (node.type == 'checkbox' || node.type == 'radio') {
-          val = node.checked ? 'true' : 'false';
-        }
-        else {
-          val = node.value;
-        }
+        const val = (node.type == 'checkbox' || node.type == 'radio') ?
+                  (node.checked ? 'true' : 'false') : node.value;
 
         if (node.dataset.group && node.dataset.id) {
           if (!outObj[node.dataset.group]) {
